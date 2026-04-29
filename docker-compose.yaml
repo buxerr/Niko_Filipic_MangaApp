@@ -1,0 +1,17 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: mangaapp-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: mangaapp
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - mangaapp_postgres_data:/var/lib/postgresql/data
+      - ./database/init:/docker-entrypoint-initdb.d
+
+volumes:
+  mangaapp_postgres_data:

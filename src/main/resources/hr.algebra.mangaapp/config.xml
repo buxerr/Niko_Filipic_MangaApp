@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <database>
+        <url>jdbc:postgresql://localhost:5432/mangaapp</url>
+        <username>postgres</username>
+        <password>postgres</password>
+    </database>
+</configuration>
