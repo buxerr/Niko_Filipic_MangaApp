@@ -11,6 +11,8 @@ import java.util.Set;
 
 public class RepositorySmokeTest {
 
+    //TODO: Delete this test
+
     public static void main(String[] args) {
         GenreRepository genreRepository = new SqlGenreRepository();
         PublisherRepository publisherRepository = new SqlPublisherRepository();

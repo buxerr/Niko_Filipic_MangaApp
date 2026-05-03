@@ -1,12 +1,20 @@
 package hr.algebra.mangaapp.controller;
 
+import hr.algebra.mangaapp.exception.ViewLoadException;
 import hr.algebra.mangaapp.model.User;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
+import javafx.scene.layout.BorderPane;
+import javafx.stage.Stage;
 
 public class MainController {
+
+    @FXML
+    public BorderPane root;
 
     @FXML
     private Label welcomeLabel;
@@ -27,8 +35,21 @@ public class MainController {
 
     @FXML
     private void handleLogout() {
-        // TODO: later return to login.fxml
-        Platform.exit();
+
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/hr/algebra/mangaapp/view/login.fxml")
+            );
+
+            Scene scene = new Scene(loader.load(), 400, 300);
+            Stage stage = (Stage) root.getScene().getWindow();
+            stage.setTitle("MangaApp - Login");
+            stage.setScene(scene);
+            stage.setResizable(false);
+        } catch (Exception e) {
+            throw new ViewLoadException("Error while loading login view", e);
+        }
+
     }
 
     @FXML

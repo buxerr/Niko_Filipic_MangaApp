@@ -7,7 +7,8 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox xmlns="http://javafx.com/javafx"
+<VBox fx:id="root"
+      xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="hr.algebra.mangaapp.controller.LoginController"
       spacing="12"
@@ -29,6 +30,7 @@
 
     <Button text="Login"
             onAction="#handleLogin"
+            defaultButton="true"
             maxWidth="250"/>
 
     <Label fx:id="messageLabel"/>

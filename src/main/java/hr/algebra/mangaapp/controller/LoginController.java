@@ -1,5 +1,6 @@
 package hr.algebra.mangaapp.controller;
 
+import hr.algebra.mangaapp.exception.ViewLoadException;
 import hr.algebra.mangaapp.model.User;
 import hr.algebra.mangaapp.repository.UserRepository;
 import hr.algebra.mangaapp.repository.sql.SqlUserRepository;
@@ -9,11 +10,15 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.util.Optional;
 
 public class LoginController {
+
+    @FXML
+    public VBox root;
 
     @FXML
     private TextField usernameTextField;
@@ -73,7 +78,7 @@ public class LoginController {
             stage.centerOnScreen();
 
         } catch (Exception e) {
-            throw new RuntimeException("Error while opening main window", e);
+            throw new ViewLoadException("Error while opening main window", e);
         }
     }
 }
