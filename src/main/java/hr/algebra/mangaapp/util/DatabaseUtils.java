@@ -7,6 +7,7 @@ import java.sql.SQLException;
 public final class DatabaseUtils {
 
     // TODO: Load database configuration from config.xml
+    // TODO: Fix admin hash in 03_insert_admin.sql
 
     private static final String URL = "jdbc:postgresql://localhost:5433/mangaapp";
     private static final String USERNAME = "postgres";

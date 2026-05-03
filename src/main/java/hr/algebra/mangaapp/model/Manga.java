@@ -80,6 +80,14 @@ public class Manga extends BaseEntity implements Comparable<Manga> {
         return publisher;
     }
 
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
+
     public void setPublisher(Publisher publisher) {
         this.publisher = publisher;
     }
