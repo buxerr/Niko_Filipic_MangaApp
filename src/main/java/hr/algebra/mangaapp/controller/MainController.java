@@ -5,16 +5,21 @@ import hr.algebra.mangaapp.model.User;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 public class MainController {
 
     @FXML
     public BorderPane root;
+
+    @FXML
+    private StackPane contentPane;
 
     @FXML
     private Label welcomeLabel;
@@ -64,7 +69,7 @@ public class MainController {
 
     @FXML
     private void handleGenres() {
-        System.out.println("Genres clicked");
+        loadView("/hr/algebra/mangaapp/view/genre.fxml");
     }
 
     @FXML
@@ -96,4 +101,15 @@ public class MainController {
     private void handleBackupXml() {
         System.out.println("Backup XML clicked");
     }
+
+    private void loadView(String fxmlPath) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            Parent view = loader.load();
+            contentPane.getChildren().setAll(view);
+        } catch (Exception e) {
+            throw new ViewLoadException("Error while loading view: " + fxmlPath, e);
+        }
+    }
+
 }

@@ -6,6 +6,7 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.layout.BorderPane?>
 
+<?import javafx.scene.layout.StackPane?>
 <BorderPane fx:id="root"
             xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
@@ -35,7 +36,9 @@
     </top>
 
     <center>
-        <Label fx:id="welcomeLabel" text="Welcome to MangaApp"/>
+        <StackPane fx:id="contentPane">
+            <Label fx:id="welcomeLabel" text="Welcome to MangaApp"/>
+        </StackPane>
     </center>
 
 </BorderPane>
