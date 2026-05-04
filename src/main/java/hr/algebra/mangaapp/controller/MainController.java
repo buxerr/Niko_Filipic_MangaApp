@@ -74,12 +74,12 @@ public class MainController {
 
     @FXML
     private void handleAuthors() {
-        System.out.println("Authors clicked");
+        loadView("/hr/algebra/mangaapp/view/author.fxml");
     }
 
     @FXML
     private void handlePublishers() {
-        System.out.println("Publishers clicked");
+        loadView("/hr/algebra/mangaapp/view/publisher.fxml");
     }
 
     @FXML

@@ -18,7 +18,6 @@ public class GenreController {
 
     @FXML
     private TableView<Genre> genreTableView;
-    private final ObservableList<Genre> genreItems = FXCollections.observableArrayList();
 
     @FXML
     private TableColumn<Genre, Long> idColumn;
@@ -42,6 +41,8 @@ public class GenreController {
     private Label messageLabel;
 
     private final GenreRepository genreRepository = new SqlGenreRepository();
+
+    private final ObservableList<Genre> genreItems = FXCollections.observableArrayList();
 
     @FXML
     private void initialize() {
