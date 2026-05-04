@@ -40,6 +40,11 @@ public class RegisterController {
 
     private final UserRepository userRepository = new SqlUserRepository();
 
+    @FXML
+    private void initialize() {
+        usernameTextField.requestFocus();
+    }
+
     public void handleRegister(ActionEvent actionEvent) {
 
         String username = usernameTextField.getText();

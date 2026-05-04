@@ -2,6 +2,7 @@ package hr.algebra.mangaapp.repository.sql;
 
 import hr.algebra.mangaapp.model.Genre;
 import hr.algebra.mangaapp.repository.GenreRepository;
+import hr.algebra.mangaapp.util.DatabaseUtils;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -78,4 +79,27 @@ public class SqlGenreRepository extends SqlAbstractRepository<Genre> implements 
 
         return genres;
     }
+
+    @Override
+    public boolean existsByName(String name) {
+        String sql = "SELECT fn_genre_exists_by_name(?)";
+
+        try (
+                Connection connection = DatabaseUtils.getConnection();
+                PreparedStatement statement = connection.prepareStatement(sql)
+        ) {
+            statement.setString(1, name);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getBoolean(1);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error while checking if genre exists", e);
+        }
+
+        return false;
+    }
+
 }

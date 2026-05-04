@@ -3,7 +3,10 @@ package hr.algebra.mangaapp.controller;
 import hr.algebra.mangaapp.model.Genre;
 import hr.algebra.mangaapp.repository.GenreRepository;
 import hr.algebra.mangaapp.repository.sql.SqlGenreRepository;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
@@ -15,6 +18,7 @@ public class GenreController {
 
     @FXML
     private TableView<Genre> genreTableView;
+    private final ObservableList<Genre> genreItems = FXCollections.observableArrayList();
 
     @FXML
     private TableColumn<Genre, Long> idColumn;
@@ -42,13 +46,19 @@ public class GenreController {
     @FXML
     private void initialize() {
         idColumn.setCellValueFactory(cellData ->
-                new javafx.beans.property.SimpleObjectProperty<>(cellData.getValue().getId()));
+                new SimpleObjectProperty<>(cellData.getValue().getId()));
 
         nameColumn.setCellValueFactory(cellData ->
-                new javafx.beans.property.SimpleStringProperty(cellData.getValue().getName()));
+                new SimpleStringProperty(cellData.getValue().getName()));
 
         descriptionColumn.setCellValueFactory(cellData ->
-                new javafx.beans.property.SimpleStringProperty(cellData.getValue().getDescription()));
+                new SimpleStringProperty(
+                        cellData.getValue().getDescription() != null
+                                ? cellData.getValue().getDescription()
+                                : ""
+                ));
+
+        genreTableView.setItems(genreItems);
 
         genreTableView.getSelectionModel()
                 .selectedItemProperty()
@@ -71,7 +81,14 @@ public class GenreController {
             return;
         }
 
-        genreRepository.create(new Genre(name.trim(), description));
+        name = name.trim();
+
+        if (genreRepository.existsByName(name)) {
+            messageLabel.setText("Genre already exists.");
+            return;
+        }
+
+        genreRepository.create(new Genre(name, description));
         messageLabel.setText("Genre added.");
 
         clearForm();
@@ -95,14 +112,20 @@ public class GenreController {
             return;
         }
 
-        selectedGenre.setName(name.trim());
-        selectedGenre.setDescription(description);
+        Genre updatedGenre = new Genre(
+                selectedGenre.getId(),
+                name.trim(),
+                description == null || description.isBlank() ? null : description.trim()
+        );
 
-        genreRepository.update(selectedGenre);
-        messageLabel.setText("Genre updated.");
+        genreRepository.update(updatedGenre);
 
-        clearForm();
         loadGenres();
+
+        genreTableView.getSelectionModel().clearSelection();
+        clearForm();
+
+        messageLabel.setText("Genre updated.");
     }
 
     @FXML
@@ -142,9 +165,8 @@ public class GenreController {
     }
 
     private void loadGenres() {
-        genreTableView.setItems(
-                FXCollections.observableArrayList(genreRepository.findAll())
-        );
+        genreItems.setAll(genreRepository.findAll());
+        genreTableView.refresh();
     }
 
     private void fillForm(Genre genre) {

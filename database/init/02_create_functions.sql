@@ -105,6 +105,21 @@ $$;
 -- Genre
 -- =========================================================
 
+CREATE OR REPLACE FUNCTION fn_genre_exists_by_name(
+    p_name VARCHAR
+)
+RETURNS BOOLEAN
+LANGUAGE plpgsql
+AS $$
+BEGIN
+RETURN EXISTS (
+    SELECT 1
+    FROM genre g
+    WHERE LOWER(g.name) = LOWER(BTRIM(p_name))
+);
+END;
+$$;
+
 CREATE OR REPLACE FUNCTION fn_create_genre(
     p_name VARCHAR,
     p_description TEXT
