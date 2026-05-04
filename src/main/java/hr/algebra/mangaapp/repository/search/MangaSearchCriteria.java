@@ -1,11 +1,14 @@
 package hr.algebra.mangaapp.repository.search;
 
+import hr.algebra.mangaapp.model.enums.MangaStatus;
+
 public class MangaSearchCriteria {
 
     private String title;
     private Long genreId;
     private Long authorId;
     private Long publisherId;
+    private MangaStatus status;
     private Integer releaseYearFrom;
     private Integer releaseYearTo;
 
@@ -48,6 +51,15 @@ public class MangaSearchCriteria {
         return this;
     }
 
+    public MangaStatus getStatus() {
+        return status;
+    }
+
+    public MangaSearchCriteria setStatus(MangaStatus status) {
+        this.status = status;
+        return this;
+    }
+
     public Integer getReleaseYearFrom() {
         return releaseYearFrom;
     }
@@ -71,6 +83,7 @@ public class MangaSearchCriteria {
                 && genreId == null
                 && authorId == null
                 && publisherId == null
+                && status == null
                 && releaseYearFrom == null
                 && releaseYearTo == null;
     }

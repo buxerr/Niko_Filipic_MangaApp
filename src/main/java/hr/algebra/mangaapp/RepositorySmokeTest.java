@@ -1,6 +1,8 @@
 package hr.algebra.mangaapp;
 
 import hr.algebra.mangaapp.model.*;
+import hr.algebra.mangaapp.model.enums.AuthorType;
+import hr.algebra.mangaapp.model.enums.MangaStatus;
 import hr.algebra.mangaapp.model.enums.UserRole;
 import hr.algebra.mangaapp.repository.*;
 import hr.algebra.mangaapp.repository.search.MangaSearchCriteria;
@@ -60,7 +62,7 @@ public class RepositorySmokeTest {
 
         System.out.println("=== AUTHOR TEST ===");
         Long authorId = authorRepository.create(
-                new Author("Test", "Author" + suffix)
+                new Author("Test", "Author" + suffix, AuthorType.MANGAKA)
         );
         Author author = authorRepository.findById(authorId).orElseThrow();
         System.out.println("Created author: " + author);
@@ -124,6 +126,7 @@ public class RepositorySmokeTest {
                 1,
                 publisher,
                 "assets/images/test-manga-" + suffix + ".jpg",
+                MangaStatus.ONGOING,
                 new HashSet<>(Set.of(character)),
                 new HashSet<>(Set.of(genre)),
                 new HashSet<>(Set.of(author))

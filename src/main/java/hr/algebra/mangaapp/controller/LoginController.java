@@ -4,6 +4,7 @@ import hr.algebra.mangaapp.exception.ViewLoadException;
 import hr.algebra.mangaapp.model.User;
 import hr.algebra.mangaapp.repository.UserRepository;
 import hr.algebra.mangaapp.repository.sql.SqlUserRepository;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -30,6 +31,11 @@ public class LoginController {
     private Label messageLabel;
 
     private final UserRepository userRepository = new SqlUserRepository();
+
+    @FXML
+    private void initialize() {
+        usernameTextField.requestFocus();
+    }
 
     @FXML
     private void handleLogin() {

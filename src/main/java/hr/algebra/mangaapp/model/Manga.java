@@ -1,5 +1,7 @@
 package hr.algebra.mangaapp.model;
 
+import hr.algebra.mangaapp.model.enums.MangaStatus;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -10,6 +12,7 @@ public class Manga extends BaseEntity implements Comparable<Manga> {
     private int releaseYear;
     private int volumes;
     private String imagePath;
+    private MangaStatus status;
 
     private Publisher publisher;
     private Set<StoryCharacter> characters = new HashSet<>();
@@ -18,25 +21,27 @@ public class Manga extends BaseEntity implements Comparable<Manga> {
 
     public Manga() {}
 
-    public Manga(String title, String description, int releaseYear, int volumes, Publisher publisher, String imagePath, Set<StoryCharacter> characters, Set<Genre> genres, Set<Author> authors) {
+    public Manga(String title, String description, int releaseYear, int volumes, Publisher publisher, String imagePath, MangaStatus status, Set<StoryCharacter> characters, Set<Genre> genres, Set<Author> authors) {
         super();
         this.title = title;
         this.description = description;
         this.releaseYear = releaseYear;
         this.volumes = volumes;
         this.imagePath = imagePath;
+        this.status = status;
         this.publisher = publisher;
         this.characters = characters != null ? characters : new HashSet<>();
         this.genres = genres != null ? genres : new HashSet<>();
         this.authors = authors != null ? authors : new HashSet<>();
     }
 
-    public Manga(Long id, String title, String description, int releaseYear, int volumes, Publisher publisher, String imagePath, Set<StoryCharacter> characters, Set<Genre> genres, Set<Author> authors) {
+    public Manga(Long id, String title, String description, int releaseYear, int volumes, Publisher publisher, String imagePath, MangaStatus status, Set<StoryCharacter> characters, Set<Genre> genres, Set<Author> authors) {
         super(id);
         this.title = title;
         this.description = description;
         this.releaseYear = releaseYear;
         this.volumes = volumes;
+        this.status = status;
         this.publisher = publisher;
         this.imagePath = imagePath;
         this.characters = characters != null ? characters : new HashSet<>();
@@ -86,6 +91,14 @@ public class Manga extends BaseEntity implements Comparable<Manga> {
 
     public void setImagePath(String imagePath) {
         this.imagePath = imagePath;
+    }
+
+    public MangaStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(MangaStatus status) {
+        this.status = status;
     }
 
     public void setPublisher(Publisher publisher) {

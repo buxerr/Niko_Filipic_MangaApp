@@ -6,6 +6,8 @@ import hr.algebra.mangaapp.model.Genre;
 import hr.algebra.mangaapp.model.Manga;
 import hr.algebra.mangaapp.model.Publisher;
 import hr.algebra.mangaapp.model.StoryCharacter;
+import hr.algebra.mangaapp.model.enums.AuthorType;
+import hr.algebra.mangaapp.model.enums.MangaStatus;
 import hr.algebra.mangaapp.repository.MangaRepository;
 import hr.algebra.mangaapp.repository.search.MangaSearchCriteria;
 import hr.algebra.mangaapp.util.DatabaseUtils;
@@ -69,7 +71,7 @@ public class SqlMangaRepository implements MangaRepository {
 
     @Override
     public Long create(Manga manga) {
-        String sql = "SELECT fn_create_manga(?, ?, ?, ?, ?, ?)";
+        String sql = "SELECT fn_create_manga(?, ?, ?, ?, ?, ?, ?)";
 
         try (
                 Connection connection = DatabaseUtils.getConnection();
@@ -79,12 +81,13 @@ public class SqlMangaRepository implements MangaRepository {
             statement.setString(2, manga.getDescription());
             statement.setInt(3, manga.getReleaseYear());
             statement.setInt(4, manga.getVolumes());
-            statement.setString(5, manga.getImagePath());
+            statement.setString(5, manga.getStatus().name());
+            statement.setString(6, manga.getImagePath());
 
             if (manga.getPublisher() != null && manga.getPublisher().getId() != null) {
-                statement.setLong(6, manga.getPublisher().getId());
+                statement.setLong(7, manga.getPublisher().getId());
             } else {
-                statement.setNull(6, Types.BIGINT);
+                statement.setNull(7, Types.BIGINT);
             }
 
             Long newMangaId;
@@ -108,7 +111,7 @@ public class SqlMangaRepository implements MangaRepository {
 
     @Override
     public void update(Manga manga) {
-        String sql = "CALL sp_update_manga(?, ?, ?, ?, ?, ?, ?)";
+        String sql = "CALL sp_update_manga(?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (
                 Connection connection = DatabaseUtils.getConnection();
@@ -119,12 +122,13 @@ public class SqlMangaRepository implements MangaRepository {
             statement.setString(3, manga.getDescription());
             statement.setInt(4, manga.getReleaseYear());
             statement.setInt(5, manga.getVolumes());
-            statement.setString(6, manga.getImagePath());
+            statement.setString(6, manga.getStatus().name());
+            statement.setString(7, manga.getImagePath());
 
             if (manga.getPublisher() != null && manga.getPublisher().getId() != null) {
-                statement.setLong(7, manga.getPublisher().getId());
+                statement.setLong(8, manga.getPublisher().getId());
             } else {
-                statement.setNull(7, Types.BIGINT);
+                statement.setNull(8, Types.BIGINT);
             }
 
             statement.execute();
@@ -155,7 +159,7 @@ public class SqlMangaRepository implements MangaRepository {
     public List<Manga> search(MangaSearchCriteria criteria) {
         List<Manga> mangas = new ArrayList<>();
 
-        String sql = "SELECT * FROM fn_search_mangas(?, ?, ?, ?, ?, ?)";
+        String sql = "SELECT * FROM fn_search_mangas(?, ?, ?, ?, ?, ?, ?)";
 
         try (
                 Connection connection = DatabaseUtils.getConnection();
@@ -170,8 +174,15 @@ public class SqlMangaRepository implements MangaRepository {
             setNullableLong(statement, 2, criteria != null ? criteria.getGenreId() : null);
             setNullableLong(statement, 3, criteria != null ? criteria.getAuthorId() : null);
             setNullableLong(statement, 4, criteria != null ? criteria.getPublisherId() : null);
-            setNullableInteger(statement, 5, criteria != null ? criteria.getReleaseYearFrom() : null);
-            setNullableInteger(statement, 6, criteria != null ? criteria.getReleaseYearTo() : null);
+
+            if (criteria == null || criteria.getStatus() == null) {
+                statement.setNull(5, Types.VARCHAR);
+            } else {
+                statement.setString(5, criteria.getStatus().name());
+            }
+
+            setNullableInteger(statement, 6, criteria != null ? criteria.getReleaseYearFrom() : null);
+            setNullableInteger(statement, 7, criteria != null ? criteria.getReleaseYearTo() : null);
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
@@ -237,6 +248,7 @@ public class SqlMangaRepository implements MangaRepository {
                 resultSet.getInt("volumes"),
                 publisher,
                 resultSet.getString("image_path"),
+                MangaStatus.valueOf(resultSet.getString("status")),
                 new HashSet<>(),
                 new HashSet<>(),
                 new HashSet<>()
@@ -290,7 +302,8 @@ public class SqlMangaRepository implements MangaRepository {
                     authors.add(new Author(
                             resultSet.getLong("id"),
                             resultSet.getString("first_name"),
-                            resultSet.getString("last_name")
+                            resultSet.getString("last_name"),
+                            AuthorType.valueOf(resultSet.getString("orientation"))
                     ));
                 }
             }

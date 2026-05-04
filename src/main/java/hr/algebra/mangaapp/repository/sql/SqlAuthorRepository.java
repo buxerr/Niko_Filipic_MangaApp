@@ -1,6 +1,7 @@
 package hr.algebra.mangaapp.repository.sql;
 
 import hr.algebra.mangaapp.model.Author;
+import hr.algebra.mangaapp.model.enums.AuthorType;
 import hr.algebra.mangaapp.repository.AuthorRepository;
 import hr.algebra.mangaapp.util.DatabaseUtils;
 
@@ -22,12 +23,12 @@ public class SqlAuthorRepository extends SqlAbstractRepository<Author> implement
 
     @Override
     protected String getCreateSql() {
-        return "SELECT fn_create_author(?, ?)";
+        return "SELECT fn_create_author(?, ?, ?)";
     }
 
     @Override
     protected String getUpdateSql() {
-        return "CALL sp_update_author(?, ?, ?)";
+        return "CALL sp_update_author(?, ?, ?, ?)";
     }
 
     @Override
@@ -40,7 +41,8 @@ public class SqlAuthorRepository extends SqlAbstractRepository<Author> implement
         return new Author(
                 resultSet.getLong("id"),
                 resultSet.getString("first_name"),
-                resultSet.getString("last_name")
+                resultSet.getString("last_name"),
+                AuthorType.valueOf(resultSet.getString("orientation"))
         );
     }
 
@@ -48,6 +50,7 @@ public class SqlAuthorRepository extends SqlAbstractRepository<Author> implement
     protected void setCreateParameters(PreparedStatement statement, Author author) throws SQLException {
         statement.setString(1, author.getFirstName());
         statement.setString(2, author.getLastName());
+        statement.setString(3, author.getOrientation().name());
     }
 
     @Override
@@ -55,6 +58,7 @@ public class SqlAuthorRepository extends SqlAbstractRepository<Author> implement
         statement.setLong(1, author.getId());
         statement.setString(2, author.getFirstName());
         statement.setString(3, author.getLastName());
+        statement.setString(4, author.getOrientation().name());
     }
 
     @Override

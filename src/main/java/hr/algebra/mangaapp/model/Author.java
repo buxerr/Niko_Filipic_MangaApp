@@ -1,5 +1,7 @@
 package hr.algebra.mangaapp.model;
 
+import hr.algebra.mangaapp.model.enums.AuthorType;
+
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -8,20 +10,23 @@ public class Author extends BaseEntity implements Comparable<Author> {
 
     private String firstName;
     private String lastName;
+    private AuthorType orientation;
 
     public Author() {
     }
 
-    public Author(String firstName, String lastName) {
+    public Author(String firstName, String lastName, AuthorType orientation) {
         super();
         this.firstName = firstName;
         this.lastName = lastName;
+        this.orientation = orientation;
     }
 
-    public Author(Long id, String firstName, String lastName) {
+    public Author(Long id, String firstName, String lastName, AuthorType orientation) {
         super(id);
         this.firstName = firstName;
         this.lastName = lastName;
+        this.orientation = orientation;
     }
 
     public String getFirstName() {
@@ -38,6 +43,14 @@ public class Author extends BaseEntity implements Comparable<Author> {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public AuthorType getOrientation() {
+        return orientation;
+    }
+
+    public void setOrientation(AuthorType orientation) {
+        this.orientation = orientation;
     }
 
     public String getFullName() {

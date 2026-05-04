@@ -22,7 +22,8 @@ CREATE TABLE genre (
 CREATE TABLE author (
                         id BIGSERIAL PRIMARY KEY,
                         first_name VARCHAR(100) NOT NULL,
-                        last_name VARCHAR(100) NOT NULL
+                        last_name VARCHAR(100) NOT NULL,
+                        orientation VARCHAR(30) NOT NULL CHECK (orientation IN ('MANGAKA', 'ARTIST', 'WRITER'))
 );
 
 CREATE TABLE story_character (
@@ -44,6 +45,7 @@ CREATE TABLE manga (
                        description TEXT,
                        release_year INT,
                        volumes INT,
+                       status VARCHAR(20) NOT NULL CHECK (status IN ('ONGOING', 'COMPLETED')),
                        image_path VARCHAR(255),
                        publisher_id BIGINT REFERENCES publisher(id) ON DELETE SET NULL
 );

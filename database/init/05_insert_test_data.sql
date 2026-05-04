@@ -15,11 +15,11 @@ VALUES
     ('Adventure', 'Adventure stories')
 ON CONFLICT DO NOTHING;
 
-INSERT INTO author (first_name, last_name)
+INSERT INTO author (first_name, last_name, orientation)
 VALUES
-    ('Kentaro', 'Miura'),
-    ('Eiichiro', 'Oda'),
-    ('Masashi', 'Kishimoto');
+    ('Kentaro', 'Miura', 'MANGAKA'),
+    ('Eiichiro', 'Oda', 'MANGAKA'),
+    ('Masashi', 'Kishimoto', 'MANGAKA');
 
 INSERT INTO story_character (first_name, last_name)
 VALUES
@@ -33,17 +33,19 @@ INSERT INTO manga (
     description,
     release_year,
     volumes,
+    status,
     image_path,
     publisher_id
 )
 VALUES (
-    'Berserk',
-    'Dark fantasy manga about Guts and his journey.',
-    1989,
-    42,
-    'assets/images/berserk.jpg',
-    (SELECT id FROM publisher WHERE name = 'Hakusensha')
-);
+           'Berserk',
+           'Dark fantasy manga about Guts and his journey.',
+           1989,
+           42,
+           'ONGOING',
+           'assets/images/berserk.jpg',
+           (SELECT id FROM publisher WHERE name = 'Hakusensha')
+       );
 
 CALL sp_add_manga_genre(
     (SELECT id FROM manga WHERE title = 'Berserk'),
