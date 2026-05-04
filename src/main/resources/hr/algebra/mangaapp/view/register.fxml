@@ -10,7 +10,7 @@
 <VBox fx:id="root"
       xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="hr.algebra.mangaapp.controller.LoginController"
+      fx:controller="hr.algebra.mangaapp.controller.RegisterController"
       spacing="12"
       alignment="CENTER">
 
@@ -18,7 +18,7 @@
         <Insets top="30" right="30" bottom="30" left="30"/>
     </padding>
 
-    <Label text="MangaApp Login"/>
+    <Label text="MangaApp Register"/>
 
     <TextField fx:id="usernameTextField"
                promptText="Username"
@@ -28,13 +28,17 @@
                    promptText="Password"
                    maxWidth="250"/>
 
-    <Button text="Login"
-            onAction="#handleLogin"
+    <PasswordField fx:id="passwordRepeatField"
+                   promptText="Repeat Password"
+                   maxWidth="250"/>
+
+    <Button text="Register"
+            onAction="#handleRegister"
             defaultButton="true"
             maxWidth="250"/>
 
-    <Button text="Register"
-            onAction="#handleOpenRegister"
+    <Button text="Login"
+            onAction="#handleOpenLogin"
             maxWidth="250"/>
 
     <Label fx:id="messageLabel"/>

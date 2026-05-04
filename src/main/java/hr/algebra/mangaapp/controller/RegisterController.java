@@ -3,10 +3,10 @@ package hr.algebra.mangaapp.controller;
 import hr.algebra.mangaapp.MangaApp;
 import hr.algebra.mangaapp.exception.ViewLoadException;
 import hr.algebra.mangaapp.model.User;
+import hr.algebra.mangaapp.model.enums.UserRole;
 import hr.algebra.mangaapp.repository.UserRepository;
 import hr.algebra.mangaapp.repository.sql.SqlUserRepository;
 import hr.algebra.mangaapp.util.PasswordUtils;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -19,7 +19,9 @@ import javafx.stage.Stage;
 
 import java.util.Optional;
 
-public class LoginController {
+import static hr.algebra.mangaapp.util.PasswordUtils.hashPassword;
+
+public class RegisterController {
 
     @FXML
     public VBox root;
@@ -31,39 +33,56 @@ public class LoginController {
     private PasswordField passwordField;
 
     @FXML
+    private PasswordField passwordRepeatField;
+
+    @FXML
     private Label messageLabel;
 
     private final UserRepository userRepository = new SqlUserRepository();
 
-    @FXML
-    private void initialize() {
-        usernameTextField.requestFocus();
-    }
+    public void handleRegister(ActionEvent actionEvent) {
 
-    @FXML
-    private void handleLogin() {
         String username = usernameTextField.getText();
         String password = passwordField.getText();
+        String passwordRepeat = passwordRepeatField.getText();
 
         if (username == null || username.isBlank()
-                || password == null || password.isBlank()) {
-            messageLabel.setText("Username and password are required.");
+                || password == null || password.isBlank()
+                || passwordRepeat == null || passwordRepeat.isBlank()) {
+            messageLabel.setText("Please fill all the fields.");
             return;
         }
 
-        Optional<User> userOptional = userRepository.findByUsername(username);
+        username = username.trim();
 
-        if (userOptional.isEmpty()) {
-            messageLabel.setText("Invalid username or password.");
+        if (username.length() < 3) {
+            messageLabel.setText("Username must be at least 3 characters long.");
             return;
         }
 
-        User user = userOptional.get();
-
-        if (!PasswordUtils.matches(password, user.getPasswordHash())) {
-            messageLabel.setText("Invalid username or password.");
+        if (password.length() < 8) {
+            messageLabel.setText("Password must be at least 8 characters long.");
             return;
         }
+
+        if (!password.equals(passwordRepeat)) {
+            messageLabel.setText("Passwords do not match.");
+            return;
+        }
+
+        if (userRepository.usernameExists(username)) {
+            messageLabel.setText("Username already exists.");
+            return;
+        }
+
+        String passwordHash = PasswordUtils.hashPassword(password);
+
+        Long userId = userRepository.create(
+                new User(username, passwordHash, UserRole.USER)
+        );
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Created user could not be found."));
 
         openMainWindow(user);
     }
@@ -79,7 +98,7 @@ public class LoginController {
             MainController mainController = loader.getController();
             mainController.setCurrentUser(user);
 
-            Stage stage = (Stage) root.getScene().getWindow();
+            Stage stage = (Stage) usernameTextField.getScene().getWindow();
             stage.setTitle("MangaApp");
             stage.setScene(scene);
             stage.setResizable(true);
@@ -90,16 +109,16 @@ public class LoginController {
         }
     }
 
-    public void handleOpenRegister(ActionEvent actionEvent) {
+    public void handleOpenLogin(ActionEvent actionEvent) {
         try {
             FXMLLoader loader = new FXMLLoader(
-                    MangaApp.class.getResource("/hr/algebra/mangaapp/view/register.fxml")
+                    MangaApp.class.getResource("/hr/algebra/mangaapp/view/login.fxml")
             );
 
             Scene scene = new Scene(loader.load(), 400, 300);
 
             Stage stage = (Stage) root.getScene().getWindow();
-            stage.setTitle("MangaApp - Register");
+            stage.setTitle("MangaApp - Login");
             stage.setScene(scene);
             stage.setResizable(false);
             stage.show();
