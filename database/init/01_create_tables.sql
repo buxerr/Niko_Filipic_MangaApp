@@ -45,7 +45,7 @@ CREATE TABLE manga (
                        description TEXT,
                        release_year INT,
                        volumes INT,
-                       status VARCHAR(20) NOT NULL CHECK (status IN ('ONGOING', 'COMPLETED')),
+                       status VARCHAR(20) NOT NULL CHECK (status IN ('ONGOING', 'COMPLETED', 'HIATUS', 'CANCELLED')),
                        image_path VARCHAR(255),
                        publisher_id BIGINT REFERENCES publisher(id) ON DELETE SET NULL
 );
