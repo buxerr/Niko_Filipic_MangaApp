@@ -84,7 +84,7 @@ public class MainController {
 
     @FXML
     private void handleCharacters() {
-        System.out.println("Characters clicked");
+        loadView("/hr/algebra/mangaapp/view/story-character.fxml");
     }
 
     @FXML
