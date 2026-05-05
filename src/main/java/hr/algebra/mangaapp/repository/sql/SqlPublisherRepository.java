@@ -1,5 +1,6 @@
 package hr.algebra.mangaapp.repository.sql;
 
+import hr.algebra.mangaapp.exception.RepositoryException;
 import hr.algebra.mangaapp.model.Publisher;
 import hr.algebra.mangaapp.repository.PublisherRepository;
 import hr.algebra.mangaapp.util.DatabaseUtils;
@@ -71,7 +72,7 @@ public class SqlPublisherRepository extends SqlAbstractRepository<Publisher> imp
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error while searching publishers", e);
+            throw new RepositoryException("Error while searching publishers", e);
         }
 
         return publishers;

@@ -1,5 +1,6 @@
 package hr.algebra.mangaapp.repository.sql;
 
+import hr.algebra.mangaapp.exception.RepositoryException;
 import hr.algebra.mangaapp.model.Author;
 import hr.algebra.mangaapp.model.enums.AuthorType;
 import hr.algebra.mangaapp.repository.AuthorRepository;
@@ -78,7 +79,7 @@ public class SqlAuthorRepository extends SqlAbstractRepository<Author> implement
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error while searching authors", e);
+            throw new RepositoryException("Error while searching authors", e);
         }
 
         return authors;

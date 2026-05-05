@@ -1,5 +1,6 @@
 package hr.algebra.mangaapp.repository.sql;
 
+import hr.algebra.mangaapp.exception.RepositoryException;
 import hr.algebra.mangaapp.model.Genre;
 import hr.algebra.mangaapp.repository.GenreRepository;
 import hr.algebra.mangaapp.util.DatabaseUtils;
@@ -74,7 +75,7 @@ public class SqlGenreRepository extends SqlAbstractRepository<Genre> implements 
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error while searching genres", e);
+            throw new RepositoryException("Error while searching genres", e);
         }
 
         return genres;
@@ -96,7 +97,7 @@ public class SqlGenreRepository extends SqlAbstractRepository<Genre> implements 
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error while checking if genre exists", e);
+            throw new RepositoryException("Error while checking if genre exists", e);
         }
 
         return false;

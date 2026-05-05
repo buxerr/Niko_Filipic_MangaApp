@@ -1,5 +1,6 @@
 package hr.algebra.mangaapp.repository.sql;
 
+import hr.algebra.mangaapp.exception.RepositoryException;
 import hr.algebra.mangaapp.repository.Repository;
 import hr.algebra.mangaapp.util.DatabaseUtils;
 
@@ -32,7 +33,7 @@ public abstract class SqlAbstractRepository<T> implements Repository<T> {
                 entities.add(map(resultSet));
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error while loading entities", e);
+            throw new RepositoryException("Error while loading entities", e);
         }
 
         return entities;
@@ -52,7 +53,7 @@ public abstract class SqlAbstractRepository<T> implements Repository<T> {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error while finding entity by id", e);
+            throw new RepositoryException("Error while finding entity by id", e);
         }
 
         return Optional.empty();
@@ -72,10 +73,10 @@ public abstract class SqlAbstractRepository<T> implements Repository<T> {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error while creating entity", e);
+            throw new RepositoryException("Error while creating entity", e);
         }
 
-        throw new RuntimeException("Entity was not created");
+        throw new RepositoryException("Entity was not created");
     }
 
     @Override
@@ -87,7 +88,7 @@ public abstract class SqlAbstractRepository<T> implements Repository<T> {
             setUpdateParameters(statement, entity);
             statement.execute();
         } catch (SQLException e) {
-            throw new RuntimeException("Error while updating entity", e);
+            throw new RepositoryException("Error while updating entity", e);
         }
     }
 
@@ -100,7 +101,7 @@ public abstract class SqlAbstractRepository<T> implements Repository<T> {
             statement.setLong(1, id);
             statement.execute();
         } catch (SQLException e) {
-            throw new RuntimeException("Error while deleting entity", e);
+            throw new RepositoryException("Error while deleting entity", e);
         }
     }
 }

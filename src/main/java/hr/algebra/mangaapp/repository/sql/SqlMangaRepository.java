@@ -1,5 +1,6 @@
 package hr.algebra.mangaapp.repository.sql;
 
+import hr.algebra.mangaapp.exception.RepositoryException;
 import hr.algebra.mangaapp.model.Author;
 import hr.algebra.mangaapp.model.BaseEntity;
 import hr.algebra.mangaapp.model.Genre;
@@ -39,7 +40,7 @@ public class SqlMangaRepository implements MangaRepository {
                 mangas.add(manga);
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error while loading mangas", e);
+            throw new RepositoryException("Error while loading mangas", e);
         }
 
         return mangas;
@@ -63,7 +64,7 @@ public class SqlMangaRepository implements MangaRepository {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error while finding manga by id", e);
+            throw new RepositoryException("Error while finding manga by id", e);
         }
 
         return Optional.empty();
@@ -94,7 +95,7 @@ public class SqlMangaRepository implements MangaRepository {
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (!resultSet.next()) {
-                    throw new RuntimeException("Manga was not created");
+                    throw new RepositoryException("Manga was not created");
                 }
 
                 newMangaId = resultSet.getLong(1);
@@ -105,7 +106,7 @@ public class SqlMangaRepository implements MangaRepository {
             return newMangaId;
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error while creating manga", e);
+            throw new RepositoryException("Error while creating manga", e);
         }
     }
 
@@ -136,7 +137,7 @@ public class SqlMangaRepository implements MangaRepository {
             syncRelations(manga);
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error while updating manga", e);
+            throw new RepositoryException("Error while updating manga", e);
         }
     }
 
@@ -151,7 +152,7 @@ public class SqlMangaRepository implements MangaRepository {
             statement.setLong(1, id);
             statement.execute();
         } catch (SQLException e) {
-            throw new RuntimeException("Error while deleting manga", e);
+            throw new RepositoryException("Error while deleting manga", e);
         }
     }
 
@@ -193,7 +194,7 @@ public class SqlMangaRepository implements MangaRepository {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error while searching mangas", e);
+            throw new RepositoryException("Error while searching mangas", e);
         }
 
         return mangas;
@@ -281,7 +282,7 @@ public class SqlMangaRepository implements MangaRepository {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error while loading manga genres", e);
+            throw new RepositoryException("Error while loading manga genres", e);
         }
 
         return genres;
@@ -308,7 +309,7 @@ public class SqlMangaRepository implements MangaRepository {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error while loading manga authors", e);
+            throw new RepositoryException("Error while loading manga authors", e);
         }
 
         return authors;
@@ -334,7 +335,7 @@ public class SqlMangaRepository implements MangaRepository {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error while loading manga characters", e);
+            throw new RepositoryException("Error while loading manga characters", e);
         }
 
         return characters;
@@ -449,7 +450,7 @@ public class SqlMangaRepository implements MangaRepository {
             statement.setLong(2, secondId);
             statement.execute();
         } catch (SQLException e) {
-            throw new RuntimeException("Error while executing relation procedure", e);
+            throw new RepositoryException("Error while executing relation procedure", e);
         }
     }
 

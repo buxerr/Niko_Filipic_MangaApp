@@ -1,5 +1,6 @@
 package hr.algebra.mangaapp.repository.sql;
 
+import hr.algebra.mangaapp.exception.RepositoryException;
 import hr.algebra.mangaapp.model.User;
 import hr.algebra.mangaapp.model.enums.UserRole;
 import hr.algebra.mangaapp.repository.UserRepository;
@@ -76,7 +77,7 @@ public class SqlUserRepository extends SqlAbstractRepository<User> implements Us
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error while finding user by username", e);
+            throw new RepositoryException("Error while finding user by username", e);
         }
 
         return Optional.empty();
@@ -98,7 +99,7 @@ public class SqlUserRepository extends SqlAbstractRepository<User> implements Us
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error while checking username existence", e);
+            throw new RepositoryException("Error while checking username existence", e);
         }
 
         return false;

@@ -1,5 +1,6 @@
 package hr.algebra.mangaapp.repository.sql;
 
+import hr.algebra.mangaapp.exception.RepositoryException;
 import hr.algebra.mangaapp.model.StoryCharacter;
 import hr.algebra.mangaapp.repository.StoryCharacterRepository;
 import hr.algebra.mangaapp.util.DatabaseUtils;
@@ -74,7 +75,7 @@ public class SqlStoryCharacterRepository extends SqlAbstractRepository<StoryChar
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error while searching story characters", e);
+            throw new RepositoryException("Error while searching story characters", e);
         }
 
         return characters;
