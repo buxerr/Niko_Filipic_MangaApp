@@ -2,11 +2,16 @@ package hr.algebra.mangaapp.controller;
 
 import hr.algebra.mangaapp.exception.ViewLoadException;
 import hr.algebra.mangaapp.model.User;
+import hr.algebra.mangaapp.repository.AdminRepository;
+import hr.algebra.mangaapp.repository.RepositoryFactory;
+import hr.algebra.mangaapp.repository.sql.SqlAdminRepository;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.layout.BorderPane;
@@ -28,6 +33,8 @@ public class MainController {
     private Menu adminMenu;
 
     private User currentUser;
+
+    private AdminRepository adminRepository = RepositoryFactory.getAdminRepository();
 
     public void setCurrentUser(User currentUser) {
         this.currentUser = currentUser;
@@ -89,7 +96,30 @@ public class MainController {
 
     @FXML
     private void handleClearData() {
-        System.out.println("Clear data clicked");
+        if (currentUser == null || !currentUser.isAdmin()) {
+            showError("Only administrators can clear data.");
+            return;
+        }
+
+        Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmationAlert.setTitle("Clear all data");
+        confirmationAlert.setHeaderText("Are you sure you want to clear all application data?");
+        confirmationAlert.setContentText(
+                "This will delete all manga, genres, authors, publishers, characters and users. " +
+                        "The admin account will be recreated."
+        );
+
+        confirmationAlert.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                adminRepository.clearAllData();
+
+                contentPane.getChildren().clear();
+                welcomeLabel.setText("All data cleared. Admin account was recreated.");
+                contentPane.getChildren().setAll(welcomeLabel);
+
+                showInfo("All data was cleared successfully.");
+            }
+        });
     }
 
     @FXML
@@ -110,6 +140,22 @@ public class MainController {
         } catch (Exception e) {
             throw new ViewLoadException("Error while loading view: " + fxmlPath, e);
         }
+    }
+
+    private void showInfo(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Information");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    private void showError(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
 }

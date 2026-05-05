@@ -1,6 +1,7 @@
 package hr.algebra.mangaapp.controller;
 
 import hr.algebra.mangaapp.model.StoryCharacter;
+import hr.algebra.mangaapp.repository.RepositoryFactory;
 import hr.algebra.mangaapp.repository.StoryCharacterRepository;
 import hr.algebra.mangaapp.repository.sql.SqlStoryCharacterRepository;
 import javafx.beans.property.SimpleObjectProperty;
@@ -36,7 +37,7 @@ public class StoryCharacterController {
     @FXML
     private Label messageLabel;
 
-    private final StoryCharacterRepository characterRepository = new SqlStoryCharacterRepository();
+    private final StoryCharacterRepository characterRepository = RepositoryFactory.getStoryCharacterRepository();
 
     private final ObservableList<StoryCharacter> characterItems = FXCollections.observableArrayList();
 

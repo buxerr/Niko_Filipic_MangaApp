@@ -2,6 +2,7 @@ package hr.algebra.mangaapp.controller;
 
 import hr.algebra.mangaapp.model.Publisher;
 import hr.algebra.mangaapp.repository.PublisherRepository;
+import hr.algebra.mangaapp.repository.RepositoryFactory;
 import hr.algebra.mangaapp.repository.sql.SqlPublisherRepository;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -34,7 +35,7 @@ public class PublisherController {
     @FXML
     private Label messageLabel;
 
-    private final PublisherRepository publisherRepository = new SqlPublisherRepository();
+    private final PublisherRepository publisherRepository = RepositoryFactory.getPublisherRepository();
 
     private final ObservableList<Publisher> publisherItems = FXCollections.observableArrayList();
 

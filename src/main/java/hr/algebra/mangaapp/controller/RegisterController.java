@@ -4,6 +4,7 @@ import hr.algebra.mangaapp.MangaApp;
 import hr.algebra.mangaapp.exception.ViewLoadException;
 import hr.algebra.mangaapp.model.User;
 import hr.algebra.mangaapp.model.enums.UserRole;
+import hr.algebra.mangaapp.repository.RepositoryFactory;
 import hr.algebra.mangaapp.repository.UserRepository;
 import hr.algebra.mangaapp.repository.sql.SqlUserRepository;
 import hr.algebra.mangaapp.util.PasswordUtils;
@@ -38,7 +39,7 @@ public class RegisterController {
     @FXML
     private Label messageLabel;
 
-    private final UserRepository userRepository = new SqlUserRepository();
+    private final UserRepository userRepository = RepositoryFactory.getUserRepository();
 
     @FXML
     private void initialize() {

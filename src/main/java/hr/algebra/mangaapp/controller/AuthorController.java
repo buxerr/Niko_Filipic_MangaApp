@@ -3,6 +3,7 @@ package hr.algebra.mangaapp.controller;
 import hr.algebra.mangaapp.model.Author;
 import hr.algebra.mangaapp.model.enums.AuthorType;
 import hr.algebra.mangaapp.repository.AuthorRepository;
+import hr.algebra.mangaapp.repository.RepositoryFactory;
 import hr.algebra.mangaapp.repository.sql.SqlAuthorRepository;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -43,7 +44,7 @@ public class AuthorController {
     @FXML
     private Label messageLabel;
 
-    private final AuthorRepository authorRepository = new SqlAuthorRepository();
+    private final AuthorRepository authorRepository = RepositoryFactory.getAuthorRepository();
 
     private final ObservableList<Author> authorItems = FXCollections.observableArrayList();
 

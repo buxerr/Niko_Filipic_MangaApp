@@ -2,6 +2,7 @@ package hr.algebra.mangaapp.controller;
 
 import hr.algebra.mangaapp.model.Genre;
 import hr.algebra.mangaapp.repository.GenreRepository;
+import hr.algebra.mangaapp.repository.RepositoryFactory;
 import hr.algebra.mangaapp.repository.sql.SqlGenreRepository;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -40,7 +41,7 @@ public class GenreController {
     @FXML
     private Label messageLabel;
 
-    private final GenreRepository genreRepository = new SqlGenreRepository();
+    private final GenreRepository genreRepository = RepositoryFactory.getGenreRepository();
 
     private final ObservableList<Genre> genreItems = FXCollections.observableArrayList();
 
