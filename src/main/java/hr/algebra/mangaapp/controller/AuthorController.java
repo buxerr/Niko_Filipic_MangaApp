@@ -223,7 +223,29 @@ public class AuthorController {
     private void handleClear() {
         authorTableView.getSelectionModel().clearSelection();
         clearForm();
+
+        resetComboBox(orientationComboBox, "Orientation");
+
         messageLabel.setText("");
+    }
+
+    private void resetComboBox(ComboBox comboBox, String promptText) {
+        comboBox.setValue(null);
+        comboBox.getSelectionModel().clearSelection();
+        comboBox.setPromptText(promptText);
+
+        comboBox.setButtonCell(new ListCell() {
+            @Override
+            protected void updateItem(Object item, boolean empty) {
+                super.updateItem(item, empty);
+
+                if (empty || item == null) {
+                    setText(promptText);
+                } else {
+                    setText(item.toString());
+                }
+            }
+        });
     }
 
     private void loadAuthors() {

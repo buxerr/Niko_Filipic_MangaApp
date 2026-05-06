@@ -73,6 +73,8 @@ public class Author extends BaseEntity implements Comparable<Author> {
     @Override
     public String toString() {
         String fullName = getFullName();
-        return !fullName.isBlank() ? fullName : "Unnamed author";
+        return !fullName.isBlank()
+                ? fullName + " (" + orientation + ")"
+                : "Unnamed author";
     }
 }

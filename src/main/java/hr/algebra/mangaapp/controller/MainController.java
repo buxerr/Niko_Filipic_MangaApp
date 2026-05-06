@@ -71,7 +71,7 @@ public class MainController {
 
     @FXML
     private void handleManga() {
-        System.out.println("Manga clicked");
+        loadView("/hr/algebra/mangaapp/view/manga.fxml");
     }
 
     @FXML
