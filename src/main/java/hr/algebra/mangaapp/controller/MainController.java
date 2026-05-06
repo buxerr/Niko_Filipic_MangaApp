@@ -1,8 +1,12 @@
 package hr.algebra.mangaapp.controller;
 
 import hr.algebra.mangaapp.exception.ViewLoadException;
+import hr.algebra.mangaapp.model.Genre;
+import hr.algebra.mangaapp.model.Manga;
 import hr.algebra.mangaapp.model.User;
+import hr.algebra.mangaapp.model.enums.MangaStatus;
 import hr.algebra.mangaapp.repository.AdminRepository;
+import hr.algebra.mangaapp.repository.MangaRepository;
 import hr.algebra.mangaapp.repository.RepositoryFactory;
 import hr.algebra.mangaapp.repository.sql.SqlAdminRepository;
 import javafx.application.Platform;
@@ -16,6 +20,11 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class MainController {
 
@@ -40,6 +49,8 @@ public class MainController {
     private User currentUser;
 
     private AdminRepository adminRepository = RepositoryFactory.getAdminRepository();
+
+    private final MangaRepository mangaRepository = RepositoryFactory.getMangaRepository();
 
     private static final Logger log = LoggerFactory.getLogger(MainController.class);
 
@@ -66,6 +77,112 @@ public class MainController {
         }
 
         loadView("/hr/algebra/mangaapp/view/home.fxml");
+    }
+
+    @FXML
+    private void handleStatistics() {
+        List<Manga> mangas = mangaRepository.findAll();
+
+        String report = buildStatisticsReport(mangas);
+
+        TextArea textArea = new TextArea(report);
+        textArea.setEditable(false);
+        textArea.setWrapText(true);
+        textArea.setPrefWidth(650);
+        textArea.setPrefHeight(450);
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("MangaApp Statistics");
+        alert.setHeaderText("Catalog statistics");
+        alert.getDialogPane().setContent(textArea);
+        alert.showAndWait();
+    }
+
+    private String buildStatisticsReport(List<Manga> mangas) {
+        if (mangas == null || mangas.isEmpty()) {
+            return "No manga/comics available in the catalog.";
+        }
+
+        long totalManga = mangas.size();
+
+        double averageVolumes = mangas.stream()
+                .mapToInt(Manga::getVolumes)
+                .average()
+                .orElse(0);
+
+        Manga oldestManga = mangas.stream()
+                .min(Comparator.comparingInt(Manga::getReleaseYear))
+                .orElse(null);
+
+        Map<MangaStatus, Long> mangaByStatus = mangas.stream()
+                .filter(manga -> manga.getStatus() != null)
+                .collect(Collectors.groupingBy(
+                        Manga::getStatus,
+                        Collectors.counting()
+                ));
+
+        Map<String, Long> mangaByPublisher = mangas.stream()
+                .filter(manga -> manga.getPublisher() != null)
+                .collect(Collectors.groupingBy(
+                        manga -> manga.getPublisher().getName(),
+                        Collectors.counting()
+                ));
+
+        Map<String, Long> genreUsage = mangas.stream()
+                .filter(manga -> manga.getGenres() != null)
+                .flatMap(manga -> manga.getGenres().stream())
+                .collect(Collectors.groupingBy(
+                        Genre::getName,
+                        Collectors.counting()
+                ));
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("GENERAL\n");
+        sb.append("Total manga/comics: ").append(totalManga).append("\n");
+        sb.append("Average number of volumes: ")
+                .append(String.format("%.2f", averageVolumes))
+                .append("\n");
+
+        if (oldestManga != null) {
+            sb.append("Oldest title: ")
+                    .append(oldestManga.getTitle())
+                    .append(" (")
+                    .append(oldestManga.getReleaseYear())
+                    .append(")\n");
+        }
+
+        sb.append("\nMANGA BY STATUS\n");
+        mangaByStatus.entrySet().stream()
+                .sorted(Map.Entry.comparingByKey())
+                .forEach(entry ->
+                        sb.append(entry.getKey())
+                                .append(": ")
+                                .append(entry.getValue())
+                                .append("\n")
+                );
+
+        sb.append("\nMANGA BY PUBLISHER\n");
+        mangaByPublisher.entrySet().stream()
+                .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
+                .forEach(entry ->
+                        sb.append(entry.getKey())
+                                .append(": ")
+                                .append(entry.getValue())
+                                .append("\n")
+                );
+
+        sb.append("\nGENRE USAGE\n");
+        genreUsage.entrySet().stream()
+                .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
+                .forEach(entry ->
+                        sb.append(entry.getKey())
+                                .append(": ")
+                                .append(entry.getValue())
+                                .append("\n")
+                );
+
+        return sb.toString();
     }
 
     @FXML

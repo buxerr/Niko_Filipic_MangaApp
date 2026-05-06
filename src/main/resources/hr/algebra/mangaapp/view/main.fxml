@@ -15,8 +15,9 @@
     <top>
         <MenuBar fx:id="menuBar">
 
-            <Menu text="Home">
+            <Menu text="Main">
                 <MenuItem text="Home" onAction="#handleHome"/>
+                <MenuItem text="Statistics" onAction="#handleStatistics"/>
                 <MenuItem text="Logout" onAction="#handleLogout"/>
                 <MenuItem text="Exit" onAction="#handleExit"/>
             </Menu>
