@@ -17,6 +17,8 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 
@@ -35,6 +37,8 @@ public class LoginController {
     private Label messageLabel;
 
     private final UserRepository userRepository = RepositoryFactory.getUserRepository();
+
+    private static final Logger log = LoggerFactory.getLogger(LoginController.class);
 
     @FXML
     private void initialize() {
@@ -56,16 +60,21 @@ public class LoginController {
 
         if (userOptional.isEmpty()) {
             messageLabel.setText("Invalid username or password.");
+            log.warn("Failed login attempt for username: {}", username);
             return;
         }
 
         User user = userOptional.get();
 
+        log.info("Login attempt for username: {}", username);
+
         if (!PasswordUtils.matches(password, user.getPasswordHash())) {
             messageLabel.setText("Invalid username or password.");
+            log.warn("Failed login attempt for username: {}", username);
             return;
         }
 
+        log.info("User logged in successfully: {}, role: {}", user.getUsername(), user.getRole());
         openMainWindow(user);
     }
 
@@ -87,6 +96,7 @@ public class LoginController {
             stage.centerOnScreen();
 
         } catch (Exception e) {
+            log.error("Unexpected error during login", e);
             throw new ViewLoadException("Error while opening main window", e);
         }
     }
@@ -106,6 +116,7 @@ public class LoginController {
             stage.show();
 
         } catch (Exception e) {
+            log.error("Unexpected error during login", e);
             throw new ViewLoadException("Error while opening main window", e);
         }
     }

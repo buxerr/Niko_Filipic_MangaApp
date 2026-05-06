@@ -10,13 +10,12 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
-import javafx.scene.control.Menu;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MainController {
 
@@ -30,6 +29,9 @@ public class MainController {
     private Label welcomeLabel;
 
     @FXML
+    private MenuBar menuBar;
+
+    @FXML
     private Menu adminMenu;
 
     @FXML
@@ -39,21 +41,40 @@ public class MainController {
 
     private AdminRepository adminRepository = RepositoryFactory.getAdminRepository();
 
+    private static final Logger log = LoggerFactory.getLogger(MainController.class);
+
     public void setCurrentUser(User currentUser) {
         this.currentUser = currentUser;
 
-        welcomeLabel.setText("Welcome, " + currentUser.getUsername()
-                + " (" + currentUser.getRole() + ")");
+        log.info("Main window opened for user: {}, role: {}",
+                currentUser.getUsername(),
+                currentUser.getRole());
 
-        adminMenu.setDisable(!currentUser.isAdmin());
-        manageMenu.setDisable(!currentUser.isAdmin());
+        boolean isAdmin = currentUser.isAdmin();
+
+        if (!isAdmin) {
+            menuBar.getMenus().remove(manageMenu);
+            menuBar.getMenus().remove(adminMenu);
+        } else {
+            if (!menuBar.getMenus().contains(manageMenu)) {
+                menuBar.getMenus().add(manageMenu);
+            }
+
+            if (!menuBar.getMenus().contains(adminMenu)) {
+                menuBar.getMenus().add(adminMenu);
+            }
+        }
 
         loadView("/hr/algebra/mangaapp/view/home.fxml");
     }
 
     @FXML
     private void handleLogout() {
-
+        if (currentUser != null) {
+            log.info("User logged out: {}", currentUser.getUsername());
+        } else {
+            log.warn("Logout requested but currentUser is null");
+        }
         try {
             FXMLLoader loader = new FXMLLoader(
                     getClass().getResource("/hr/algebra/mangaapp/view/login.fxml")
@@ -71,37 +92,46 @@ public class MainController {
     }
 
     @FXML
-    private void handleHome() {
-        loadView("/hr/algebra/mangaapp/view/home.fxml");
-    }
-
-    @FXML
     private void handleExit() {
+        log.info("Application exit requested by user: {}",
+                currentUser != null ? currentUser.getUsername() : "unknown");
+
         Platform.exit();
     }
 
     @FXML
+    private void handleHome() {
+        log.info("User opened Home view: {}", currentUser.getUsername());
+        loadView("/hr/algebra/mangaapp/view/home.fxml");
+    }
+
+    @FXML
     private void handleManga() {
+        log.info("User opened Manga management view: {}", currentUser.getUsername());
         loadView("/hr/algebra/mangaapp/view/manga.fxml");
     }
 
     @FXML
     private void handleGenres() {
+        log.info("User opened Genre management view: {}", currentUser.getUsername());
         loadView("/hr/algebra/mangaapp/view/genre.fxml");
     }
 
     @FXML
     private void handleAuthors() {
+        log.info("User opened Author management view: {}", currentUser.getUsername());
         loadView("/hr/algebra/mangaapp/view/author.fxml");
     }
 
     @FXML
     private void handlePublishers() {
+        log.info("User opened Publisher management view: {}", currentUser.getUsername());
         loadView("/hr/algebra/mangaapp/view/publisher.fxml");
     }
 
     @FXML
     private void handleCharacters() {
+        log.info("User opened Character management view: {}", currentUser.getUsername());
         loadView("/hr/algebra/mangaapp/view/story-character.fxml");
     }
 
@@ -145,10 +175,16 @@ public class MainController {
 
     private void loadView(String fxmlPath) {
         try {
+            log.debug("Loading view: {}", fxmlPath);
+
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Parent view = loader.load();
             contentPane.getChildren().setAll(view);
+
+            log.debug("View loaded successfully: {}", fxmlPath);
+
         } catch (Exception e) {
+            log.error("Failed to load view: {}", fxmlPath, e);
             throw new ViewLoadException("Error while loading view: " + fxmlPath, e);
         }
     }

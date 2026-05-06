@@ -17,6 +17,8 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 
@@ -40,6 +42,8 @@ public class RegisterController {
     private Label messageLabel;
 
     private final UserRepository userRepository = RepositoryFactory.getUserRepository();
+
+    private static final Logger log = LoggerFactory.getLogger(RegisterController.class);
 
     @FXML
     private void initialize() {
@@ -77,6 +81,7 @@ public class RegisterController {
         }
 
         if (userRepository.usernameExists(username)) {
+            log.warn("Registration failed because username already exists: {}", username);
             messageLabel.setText("Username already exists.");
             return;
         }
@@ -90,6 +95,8 @@ public class RegisterController {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Created user could not be found."));
 
+
+        log.info("New user registered: {}", username);
         openMainWindow(user);
     }
 
@@ -111,6 +118,7 @@ public class RegisterController {
             stage.centerOnScreen();
 
         } catch (Exception e) {
+            log.error("Unexpected error during registration", e);
             throw new ViewLoadException("Error while opening main window", e);
         }
     }
@@ -130,6 +138,7 @@ public class RegisterController {
             stage.show();
 
         } catch (Exception e) {
+            log.error("Unexpected error during registration", e);
             throw new ViewLoadException("Error while opening main window", e);
         }
     }

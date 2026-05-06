@@ -13,7 +13,7 @@
             fx:controller="hr.algebra.mangaapp.controller.MainController">
 
     <top>
-        <MenuBar>
+        <MenuBar fx:id="menuBar">
 
             <Menu text="Home">
                 <MenuItem text="Home" onAction="#handleHome"/>

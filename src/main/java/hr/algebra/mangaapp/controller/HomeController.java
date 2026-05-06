@@ -17,6 +17,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -87,7 +88,10 @@ public class HomeController {
     private Label detailCharactersLabel;
 
     @FXML
-    private TextArea detailDescriptionTextArea;
+    private Label detailDescriptionLabel;
+
+    @FXML
+    private VBox detailsBox;
 
     @FXML
     private Label messageLabel;
@@ -208,6 +212,12 @@ public class HomeController {
     }
 
     @FXML
+    private void handleClearSelection() {
+        clearDetails();
+        messageLabel.setText("");
+    }
+
+    @FXML
     private void handleRefresh() {
         searchTitleTextField.clear();
 
@@ -227,21 +237,46 @@ public class HomeController {
     }
 
     private void fillDetails(Manga manga) {
-        detailTitleLabel.setText(nullSafe(manga.getTitle()));
+        detailsBox.setVisible(true);
+        detailsBox.setManaged(true);
 
-        detailPublisherLabel.setText(
-                manga.getPublisher() != null ? manga.getPublisher().getName() : ""
-        );
+        detailTitleLabel.setText("Title: " + nullSafe(manga.getTitle()));
 
-        detailYearLabel.setText(String.valueOf(manga.getReleaseYear()));
-        detailVolumesLabel.setText(String.valueOf(manga.getVolumes()));
-        detailStatusLabel.setText(formatStatus(manga.getStatus()));
+        if (manga.getPublisher() != null && manga.getPublisher().getName() != null) {
+            detailPublisherLabel.setText("Publisher: " + manga.getPublisher().getName());
+        } else {
+            detailPublisherLabel.setText("");
+        }
 
-        detailAuthorsLabel.setText(formatAuthors(manga.getAuthors()));
-        detailGenresLabel.setText(formatGenres(manga.getGenres()));
-        detailCharactersLabel.setText(formatCharacters(manga.getCharacters()));
+        if (manga.getReleaseYear() > 0) {
+            detailYearLabel.setText("Year: " + manga.getReleaseYear());
+        } else {
+            detailYearLabel.setText("");
+        }
 
-        detailDescriptionTextArea.setText(nullSafe(manga.getDescription()));
+        if (manga.getVolumes() > 0) {
+            detailVolumesLabel.setText("Volumes: " + manga.getVolumes());
+        } else {
+            detailVolumesLabel.setText("");
+        }
+
+        if (manga.getStatus() != null) {
+            detailStatusLabel.setText("Status: " + formatStatus(manga.getStatus()));
+        } else {
+            detailStatusLabel.setText("");
+        }
+
+        String authors = formatAuthors(manga.getAuthors());
+        detailAuthorsLabel.setText(authors.isBlank() ? "" : "Authors: " + authors);
+
+        String genres = formatGenres(manga.getGenres());
+        detailGenresLabel.setText(genres.isBlank() ? "" : "Genres: " + genres);
+
+        String characters = formatCharacters(manga.getCharacters());
+        detailCharactersLabel.setText(characters.isBlank() ? "" : "Characters: " + characters);
+
+        String description = nullSafe(manga.getDescription());
+        detailDescriptionLabel.setText(description.isBlank() ? "" : "Synopsis: " + description);
     }
 
     private void clearDetails() {
@@ -253,7 +288,10 @@ public class HomeController {
         detailAuthorsLabel.setText("");
         detailGenresLabel.setText("");
         detailCharactersLabel.setText("");
-        detailDescriptionTextArea.clear();
+        detailDescriptionLabel.setText("");
+
+        detailsBox.setVisible(false);
+        detailsBox.setManaged(false);
 
         mangaTableView.getSelectionModel().clearSelection();
     }

@@ -54,44 +54,27 @@
     </center>
 
     <bottom>
-        <VBox spacing="8">
+        <VBox fx:id="detailsBox" spacing="8" visible="false" managed="false">
             <padding>
                 <Insets top="10" right="10" bottom="10" left="10"/>
             </padding>
 
-            <Label text="Selected Manga Details"/>
+            <HBox spacing="10">
+                <Label text="Selected Manga Details"/>
+                <Button text="Clear Selection" onAction="#handleClearSelection"/>
+            </HBox>
 
-            <GridPane hgap="10" vgap="6">
-                <Label text="Title:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-                <Label fx:id="detailTitleLabel" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
-
-                <Label text="Publisher:" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
-                <Label fx:id="detailPublisherLabel" GridPane.rowIndex="0" GridPane.columnIndex="3"/>
-
-                <Label text="Year:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-                <Label fx:id="detailYearLabel" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
-
-                <Label text="Volumes:" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
-                <Label fx:id="detailVolumesLabel" GridPane.rowIndex="1" GridPane.columnIndex="3"/>
-
-                <Label text="Status:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-                <Label fx:id="detailStatusLabel" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
-
-                <Label text="Authors:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
-                <Label fx:id="detailAuthorsLabel" GridPane.rowIndex="3" GridPane.columnIndex="1" GridPane.columnSpan="3"/>
-
-                <Label text="Genres:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
-                <Label fx:id="detailGenresLabel" GridPane.rowIndex="4" GridPane.columnIndex="1" GridPane.columnSpan="3"/>
-
-                <Label text="Characters:" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
-                <Label fx:id="detailCharactersLabel" GridPane.rowIndex="5" GridPane.columnIndex="1" GridPane.columnSpan="3"/>
-            </GridPane>
-
-            <TextArea fx:id="detailDescriptionTextArea"
-                      promptText="Synopsis"
-                      editable="false"
-                      wrapText="true"
-                      prefRowCount="3"/>
+            <VBox spacing="6">
+                <Label fx:id="detailTitleLabel"/>
+                <Label fx:id="detailPublisherLabel"/>
+                <Label fx:id="detailYearLabel"/>
+                <Label fx:id="detailVolumesLabel"/>
+                <Label fx:id="detailStatusLabel"/>
+                <Label fx:id="detailAuthorsLabel" wrapText="true"/>
+                <Label fx:id="detailGenresLabel" wrapText="true"/>
+                <Label fx:id="detailCharactersLabel" wrapText="true"/>
+                <Label fx:id="detailDescriptionLabel" wrapText="true"/>
+            </VBox>
 
             <Label fx:id="messageLabel"/>
         </VBox>
