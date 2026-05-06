@@ -21,12 +21,11 @@ VALUES
     ('Eiichiro', 'Oda', 'MANGAKA'),
     ('Masashi', 'Kishimoto', 'MANGAKA');
 
-INSERT INTO story_character (first_name, last_name)
+INSERT INTO story_character (first_name, last_name, role)
 VALUES
-    ('Guts', NULL),
-    ('Griffith', NULL),
-    ('Monkey D.', 'Luffy'),
-    ('Naruto', 'Uzumaki');
+    ('Guts', NULL, 'MAIN'),
+    ('Griffith', NULL, 'MAIN'),
+    ('Casca', NULL, 'SUPPORTING');
 
 INSERT INTO manga (
     title,

@@ -15,6 +15,7 @@
             </padding>
 
             <TextField fx:id="searchTextField" promptText="Search character"/>
+            <ComboBox fx:id="searchRoleComboBox" promptText="Role"/>
             <Button text="Search" onAction="#handleSearch"/>
             <Button text="Refresh" onAction="#handleRefresh"/>
         </HBox>
@@ -26,6 +27,7 @@
                 <TableColumn fx:id="idColumn" text="ID" prefWidth="80"/>
                 <TableColumn fx:id="firstNameColumn" text="First name" prefWidth="220"/>
                 <TableColumn fx:id="lastNameColumn" text="Last name" prefWidth="220"/>
+                <TableColumn fx:id="roleColumn" text="Role" prefWidth="160"/>
             </columns>
         </TableView>
     </center>
@@ -38,6 +40,10 @@
 
             <TextField fx:id="firstNameTextField" promptText="First name"/>
             <TextField fx:id="lastNameTextField" promptText="Last name"/>
+            <ComboBox fx:id="roleComboBox"
+                      promptText="Character role"
+                      GridPane.rowIndex="1"
+                      GridPane.columnIndex="1"/>
 
             <HBox spacing="10">
                 <Button text="Add" onAction="#handleAdd"/>

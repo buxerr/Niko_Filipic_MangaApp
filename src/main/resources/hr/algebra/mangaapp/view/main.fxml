@@ -14,12 +14,14 @@
 
     <top>
         <MenuBar>
-            <Menu text="File">
+
+            <Menu text="Home">
+                <MenuItem text="Home" onAction="#handleHome"/>
                 <MenuItem text="Logout" onAction="#handleLogout"/>
                 <MenuItem text="Exit" onAction="#handleExit"/>
             </Menu>
 
-            <Menu text="Manage">
+            <Menu fx:id="manageMenu" text="Manage">
                 <MenuItem text="Manga" onAction="#handleManga"/>
                 <MenuItem text="Genres" onAction="#handleGenres"/>
                 <MenuItem text="Authors" onAction="#handleAuthors"/>

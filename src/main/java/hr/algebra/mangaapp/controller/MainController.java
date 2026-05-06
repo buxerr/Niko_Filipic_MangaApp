@@ -32,6 +32,9 @@ public class MainController {
     @FXML
     private Menu adminMenu;
 
+    @FXML
+    public Menu manageMenu;
+
     private User currentUser;
 
     private AdminRepository adminRepository = RepositoryFactory.getAdminRepository();
@@ -43,6 +46,9 @@ public class MainController {
                 + " (" + currentUser.getRole() + ")");
 
         adminMenu.setDisable(!currentUser.isAdmin());
+        manageMenu.setDisable(!currentUser.isAdmin());
+
+        loadView("/hr/algebra/mangaapp/view/home.fxml");
     }
 
     @FXML
@@ -62,6 +68,11 @@ public class MainController {
             throw new ViewLoadException("Error while loading login view", e);
         }
 
+    }
+
+    @FXML
+    private void handleHome() {
+        loadView("/hr/algebra/mangaapp/view/home.fxml");
     }
 
     @FXML

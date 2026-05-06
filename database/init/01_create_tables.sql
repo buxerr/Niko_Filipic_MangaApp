@@ -29,7 +29,8 @@ CREATE TABLE author (
 CREATE TABLE story_character (
                                  id BIGSERIAL PRIMARY KEY,
                                  first_name VARCHAR(100) NOT NULL,
-                                 last_name VARCHAR(100)
+                                 last_name VARCHAR(100),
+                                 role VARCHAR(30) NOT NULL CHECK (role IN ('MAIN', 'SUPPORTING', 'ANTAGONIST'))
 );
 
 CREATE TABLE app_user (

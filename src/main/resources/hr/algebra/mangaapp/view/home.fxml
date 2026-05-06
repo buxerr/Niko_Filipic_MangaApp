@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="hr.algebra.mangaapp.controller.HomeController">
+
+    <top>
+        <VBox spacing="8">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+
+            <Label text="Manga / Comics Catalog"/>
+
+            <HBox spacing="10">
+                <TextField fx:id="searchTitleTextField"
+                           promptText="Search by title"/>
+
+                <ComboBox fx:id="genreComboBox"
+                          promptText="Genre"/>
+
+                <ComboBox fx:id="authorComboBox"
+                          promptText="Author"/>
+
+                <ComboBox fx:id="statusComboBox"
+                          promptText="Status"/>
+
+                <Button text="Search"
+                        onAction="#handleSearch"/>
+
+                <Button text="Refresh"
+                        onAction="#handleRefresh"/>
+            </HBox>
+        </VBox>
+    </top>
+
+    <center>
+        <TableView fx:id="mangaTableView">
+            <columns>
+                <TableColumn fx:id="titleColumn" text="Title" prefWidth="180"/>
+                <TableColumn fx:id="releaseYearColumn" text="Year" prefWidth="80"/>
+                <TableColumn fx:id="volumesColumn" text="Volumes" prefWidth="80"/>
+                <TableColumn fx:id="statusColumn" text="Status" prefWidth="110"/>
+                <TableColumn fx:id="publisherColumn" text="Publisher" prefWidth="150"/>
+                <TableColumn fx:id="authorsColumn" text="Authors" prefWidth="220"/>
+                <TableColumn fx:id="genresColumn" text="Genres" prefWidth="220"/>
+                <TableColumn fx:id="charactersColumn" text="Characters" prefWidth="260"/>
+            </columns>
+        </TableView>
+    </center>
+
+    <bottom>
+        <VBox spacing="8">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+
+            <Label text="Selected Manga Details"/>
+
+            <GridPane hgap="10" vgap="6">
+                <Label text="Title:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                <Label fx:id="detailTitleLabel" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+                <Label text="Publisher:" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
+                <Label fx:id="detailPublisherLabel" GridPane.rowIndex="0" GridPane.columnIndex="3"/>
+
+                <Label text="Year:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                <Label fx:id="detailYearLabel" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                <Label text="Volumes:" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
+                <Label fx:id="detailVolumesLabel" GridPane.rowIndex="1" GridPane.columnIndex="3"/>
+
+                <Label text="Status:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                <Label fx:id="detailStatusLabel" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+                <Label text="Authors:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                <Label fx:id="detailAuthorsLabel" GridPane.rowIndex="3" GridPane.columnIndex="1" GridPane.columnSpan="3"/>
+
+                <Label text="Genres:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+                <Label fx:id="detailGenresLabel" GridPane.rowIndex="4" GridPane.columnIndex="1" GridPane.columnSpan="3"/>
+
+                <Label text="Characters:" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+                <Label fx:id="detailCharactersLabel" GridPane.rowIndex="5" GridPane.columnIndex="1" GridPane.columnSpan="3"/>
+            </GridPane>
+
+            <TextArea fx:id="detailDescriptionTextArea"
+                      promptText="Synopsis"
+                      editable="false"
+                      wrapText="true"
+                      prefRowCount="3"/>
+
+            <Label fx:id="messageLabel"/>
+        </VBox>
+    </bottom>
+
+</BorderPane>

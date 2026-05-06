@@ -2,6 +2,7 @@ package hr.algebra.mangaapp.repository.sql;
 
 import hr.algebra.mangaapp.exception.RepositoryException;
 import hr.algebra.mangaapp.model.StoryCharacter;
+import hr.algebra.mangaapp.model.enums.CharacterRole;
 import hr.algebra.mangaapp.repository.StoryCharacterRepository;
 import hr.algebra.mangaapp.util.DatabaseUtils;
 
@@ -23,12 +24,12 @@ public class SqlStoryCharacterRepository extends SqlAbstractRepository<StoryChar
 
     @Override
     protected String getCreateSql() {
-        return "SELECT fn_create_story_character(?, ?)";
+        return "SELECT fn_create_story_character(?, ?, ?)";
     }
 
     @Override
     protected String getUpdateSql() {
-        return "CALL sp_update_story_character(?, ?, ?)";
+        return "CALL sp_update_story_character(?, ?, ?, ?)";
     }
 
     @Override
@@ -41,7 +42,8 @@ public class SqlStoryCharacterRepository extends SqlAbstractRepository<StoryChar
         return new StoryCharacter(
                 resultSet.getLong("id"),
                 resultSet.getString("first_name"),
-                resultSet.getString("last_name")
+                resultSet.getString("last_name"),
+                CharacterRole.valueOf(resultSet.getString("role"))
         );
     }
 
@@ -49,6 +51,7 @@ public class SqlStoryCharacterRepository extends SqlAbstractRepository<StoryChar
     protected void setCreateParameters(PreparedStatement statement, StoryCharacter character) throws SQLException {
         statement.setString(1, character.getFirstName());
         statement.setString(2, character.getLastName());
+        statement.setString(3, character.getRole().name());
     }
 
     @Override
@@ -56,6 +59,7 @@ public class SqlStoryCharacterRepository extends SqlAbstractRepository<StoryChar
         statement.setLong(1, character.getId());
         statement.setString(2, character.getFirstName());
         statement.setString(3, character.getLastName());
+        statement.setString(4, character.getRole().name());
     }
 
     @Override

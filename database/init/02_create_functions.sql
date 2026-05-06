@@ -340,7 +340,8 @@ $$;
 
 CREATE OR REPLACE FUNCTION fn_create_story_character(
     p_first_name VARCHAR,
-    p_last_name VARCHAR
+    p_last_name VARCHAR,
+    p_role VARCHAR
 )
 RETURNS BIGINT
 LANGUAGE plpgsql
@@ -348,8 +349,8 @@ AS $$
 DECLARE
 new_id BIGINT;
 BEGIN
-INSERT INTO story_character (first_name, last_name)
-VALUES (p_first_name, p_last_name)
+INSERT INTO story_character (first_name, last_name, role)
+VALUES (p_first_name, p_last_name, p_role)
     RETURNING story_character.id INTO new_id;
 
 RETURN new_id;
@@ -362,13 +363,14 @@ CREATE OR REPLACE FUNCTION fn_find_story_character_by_id(
 RETURNS TABLE (
     id BIGINT,
     first_name VARCHAR,
-    last_name VARCHAR
+    last_name VARCHAR,
+    role VARCHAR
 )
 LANGUAGE plpgsql
 AS $$
 BEGIN
 RETURN QUERY
-SELECT sc.id, sc.first_name, sc.last_name
+SELECT sc.id, sc.first_name, sc.last_name, sc.role
 FROM story_character sc
 WHERE sc.id = p_id;
 END;
@@ -378,13 +380,14 @@ CREATE OR REPLACE FUNCTION fn_find_all_story_characters()
 RETURNS TABLE (
     id BIGINT,
     first_name VARCHAR,
-    last_name VARCHAR
+    last_name VARCHAR,
+    role VARCHAR
 )
 LANGUAGE plpgsql
 AS $$
 BEGIN
 RETURN QUERY
-SELECT sc.id, sc.first_name, sc.last_name
+SELECT sc.id, sc.first_name, sc.last_name, sc.role
 FROM story_character sc
 ORDER BY sc.last_name, sc.first_name;
 END;
@@ -396,19 +399,21 @@ CREATE OR REPLACE FUNCTION fn_search_story_characters(
 RETURNS TABLE (
     id BIGINT,
     first_name VARCHAR,
-    last_name VARCHAR
+    last_name VARCHAR,
+    role VARCHAR
 )
 LANGUAGE plpgsql
 AS $$
 BEGIN
 RETURN QUERY
-SELECT sc.id, sc.first_name, sc.last_name
+SELECT sc.id, sc.first_name, sc.last_name, sc.role
 FROM story_character sc
 WHERE p_query IS NULL
    OR BTRIM(p_query) = ''
    OR LOWER(sc.first_name) LIKE '%' || LOWER(p_query) || '%'
    OR LOWER(COALESCE(sc.last_name, '')) LIKE '%' || LOWER(p_query) || '%'
    OR LOWER(sc.first_name || ' ' || COALESCE(sc.last_name, '')) LIKE '%' || LOWER(p_query) || '%'
+   OR LOWER(sc.role) LIKE '%' || LOWER(p_query) || '%'
 ORDER BY sc.last_name, sc.first_name;
 END;
 $$;
@@ -416,14 +421,16 @@ $$;
 CREATE OR REPLACE PROCEDURE sp_update_story_character(
     p_id BIGINT,
     p_first_name VARCHAR,
-    p_last_name VARCHAR
+    p_last_name VARCHAR,
+    p_role VARCHAR
 )
 LANGUAGE plpgsql
 AS $$
 BEGIN
 UPDATE story_character sc
 SET first_name = p_first_name,
-    last_name = p_last_name
+    last_name = p_last_name,
+    role = p_role
 WHERE sc.id = p_id;
 END;
 $$;
@@ -923,13 +930,14 @@ CREATE OR REPLACE FUNCTION fn_find_characters_by_manga_id(
 RETURNS TABLE (
     id BIGINT,
     first_name VARCHAR,
-    last_name VARCHAR
+    last_name VARCHAR,
+    role VARCHAR
 )
 LANGUAGE plpgsql
 AS $$
 BEGIN
 RETURN QUERY
-SELECT sc.id, sc.first_name, sc.last_name
+SELECT sc.id, sc.first_name, sc.last_name, sc.role
 FROM story_character sc
          INNER JOIN manga_character mc ON mc.character_id = sc.id
 WHERE mc.manga_id = p_manga_id
@@ -943,13 +951,14 @@ CREATE OR REPLACE FUNCTION fn_find_story_characters_by_manga_id(
 RETURNS TABLE (
     id BIGINT,
     first_name VARCHAR,
-    last_name VARCHAR
+    last_name VARCHAR,
+    role VARCHAR
 )
 LANGUAGE plpgsql
 AS $$
 BEGIN
 RETURN QUERY
-SELECT sc.id, sc.first_name, sc.last_name
+SELECT sc.id, sc.first_name, sc.last_name, sc.role
 FROM story_character sc
          INNER JOIN manga_character mc ON mc.character_id = sc.id
 WHERE mc.manga_id = p_manga_id
@@ -979,6 +988,10 @@ TRUNCATE TABLE
     RESTART IDENTITY CASCADE;
 
 INSERT INTO app_user (username, password_hash, role)
-VALUES ('admin', '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', 'ADMIN');
+VALUES (
+           'admin',
+           '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918',
+           'ADMIN'
+       );
 END;
 $$;

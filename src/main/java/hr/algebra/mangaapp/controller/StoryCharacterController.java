@@ -1,9 +1,9 @@
 package hr.algebra.mangaapp.controller;
 
 import hr.algebra.mangaapp.model.StoryCharacter;
+import hr.algebra.mangaapp.model.enums.CharacterRole;
 import hr.algebra.mangaapp.repository.RepositoryFactory;
 import hr.algebra.mangaapp.repository.StoryCharacterRepository;
-import hr.algebra.mangaapp.repository.sql.SqlStoryCharacterRepository;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -26,7 +26,13 @@ public class StoryCharacterController {
     private TableColumn<StoryCharacter, String> lastNameColumn;
 
     @FXML
+    private TableColumn<StoryCharacter, String> roleColumn;
+
+    @FXML
     private TextField searchTextField;
+
+    @FXML
+    private ComboBox<CharacterRole> searchRoleComboBox;
 
     @FXML
     private TextField firstNameTextField;
@@ -35,33 +41,56 @@ public class StoryCharacterController {
     private TextField lastNameTextField;
 
     @FXML
+    private ComboBox<CharacterRole> roleComboBox;
+
+    @FXML
     private Label messageLabel;
 
-    private final StoryCharacterRepository characterRepository = RepositoryFactory.getStoryCharacterRepository();
+    private final StoryCharacterRepository characterRepository =
+            RepositoryFactory.getStoryCharacterRepository();
 
-    private final ObservableList<StoryCharacter> characterItems = FXCollections.observableArrayList();
+    private final ObservableList<StoryCharacter> characterItems =
+            FXCollections.observableArrayList();
 
     @FXML
     private void initialize() {
+        setupTableColumns();
+        setupComboBoxes();
+        setupSelectionListener();
+
+        characterTableView.setItems(characterItems);
+
+        loadCharacters();
+    }
+
+    private void setupTableColumns() {
         idColumn.setCellValueFactory(cellData ->
                 new SimpleObjectProperty<>(cellData.getValue().getId()));
 
         firstNameColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(
-                        cellData.getValue().getFirstName() != null
-                                ? cellData.getValue().getFirstName()
-                                : ""
-                ));
+                new SimpleStringProperty(nullSafe(cellData.getValue().getFirstName())));
 
         lastNameColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(
-                        cellData.getValue().getLastName() != null
-                                ? cellData.getValue().getLastName()
-                                : ""
-                ));
+                new SimpleStringProperty(nullSafe(cellData.getValue().getLastName())));
 
-        characterTableView.setItems(characterItems);
+        roleColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(formatRole(cellData.getValue().getRole())));
+    }
 
+    private void setupComboBoxes() {
+        roleComboBox.setItems(
+                FXCollections.observableArrayList(CharacterRole.values())
+        );
+
+        searchRoleComboBox.setItems(
+                FXCollections.observableArrayList(CharacterRole.values())
+        );
+
+        resetComboBox(roleComboBox, "Character role");
+        resetComboBox(searchRoleComboBox, "Role");
+    }
+
+    private void setupSelectionListener() {
         characterTableView.getSelectionModel()
                 .selectedItemProperty()
                 .addListener((observable, oldValue, selectedCharacter) -> {
@@ -69,27 +98,34 @@ public class StoryCharacterController {
                         fillForm(selectedCharacter);
                     }
                 });
-
-        loadCharacters();
     }
 
     @FXML
     private void handleAdd() {
         String firstName = firstNameTextField.getText();
         String lastName = lastNameTextField.getText();
+        CharacterRole role = roleComboBox.getValue();
 
         if (firstName == null || firstName.isBlank()) {
             messageLabel.setText("First name is required.");
             return;
         }
 
-        String finalFirstName = firstName.trim();
-        String finalLastName = lastName == null || lastName.isBlank() ? null : lastName.trim();
+        if (role == null) {
+            messageLabel.setText("Character role is required.");
+            return;
+        }
 
-        boolean alreadyExists = characterRepository.search(firstName).stream()
+        String finalFirstName = firstName.trim();
+        String finalLastName = lastName == null || lastName.isBlank()
+                ? null
+                : lastName.trim();
+
+        boolean alreadyExists = characterRepository.search(finalFirstName).stream()
                 .anyMatch(character ->
                         safeEqualsIgnoreCase(character.getFirstName(), finalFirstName)
                                 && safeEqualsIgnoreCase(character.getLastName(), finalLastName)
+                                && character.getRole() == role
                 );
 
         if (alreadyExists) {
@@ -97,7 +133,13 @@ public class StoryCharacterController {
             return;
         }
 
-        characterRepository.create(new StoryCharacter(firstName, lastName));
+        StoryCharacter newCharacter = new StoryCharacter(
+                finalFirstName,
+                finalLastName,
+                role
+        );
+
+        characterRepository.create(newCharacter);
 
         loadCharacters();
         clearForm();
@@ -107,7 +149,8 @@ public class StoryCharacterController {
 
     @FXML
     private void handleUpdate() {
-        StoryCharacter selectedCharacter = characterTableView.getSelectionModel().getSelectedItem();
+        StoryCharacter selectedCharacter =
+                characterTableView.getSelectionModel().getSelectedItem();
 
         if (selectedCharacter == null) {
             messageLabel.setText("Select a character first.");
@@ -116,31 +159,41 @@ public class StoryCharacterController {
 
         String firstName = firstNameTextField.getText();
         String lastName = lastNameTextField.getText();
+        CharacterRole role = roleComboBox.getValue();
 
         if (firstName == null || firstName.isBlank()) {
             messageLabel.setText("First name is required.");
             return;
         }
 
-        String finalFirstName = firstName.trim();
-        String finalLastName = lastName == null || lastName.isBlank() ? null : lastName.trim();
+        if (role == null) {
+            messageLabel.setText("Character role is required.");
+            return;
+        }
 
-        boolean duplicateCharacter = characterRepository.search(firstName).stream()
+        String finalFirstName = firstName.trim();
+        String finalLastName = lastName == null || lastName.isBlank()
+                ? null
+                : lastName.trim();
+
+        boolean duplicateCharacter = characterRepository.search(finalFirstName).stream()
                 .anyMatch(character ->
                         safeEqualsIgnoreCase(character.getFirstName(), finalFirstName)
                                 && safeEqualsIgnoreCase(character.getLastName(), finalLastName)
+                                && character.getRole() == role
                                 && !character.getId().equals(selectedCharacter.getId())
                 );
 
         if (duplicateCharacter) {
-            messageLabel.setText("Another character with this name already exists.");
+            messageLabel.setText("Another character with this name and role already exists.");
             return;
         }
 
         StoryCharacter updatedCharacter = new StoryCharacter(
                 selectedCharacter.getId(),
-                firstName,
-                lastName
+                finalFirstName,
+                finalLastName,
+                role
         );
 
         characterRepository.update(updatedCharacter);
@@ -154,7 +207,8 @@ public class StoryCharacterController {
 
     @FXML
     private void handleDelete() {
-        StoryCharacter selectedCharacter = characterTableView.getSelectionModel().getSelectedItem();
+        StoryCharacter selectedCharacter =
+                characterTableView.getSelectionModel().getSelectedItem();
 
         if (selectedCharacter == null) {
             messageLabel.setText("Select a character first.");
@@ -173,14 +227,27 @@ public class StoryCharacterController {
     @FXML
     private void handleSearch() {
         String query = searchTextField.getText();
-        characterItems.setAll(characterRepository.search(query));
+        CharacterRole selectedRole = searchRoleComboBox.getValue();
+
+        characterItems.setAll(
+                characterRepository.search(query).stream()
+                        .filter(character ->
+                                selectedRole == null || character.getRole() == selectedRole
+                        )
+                        .toList()
+        );
+
         characterTableView.refresh();
+        messageLabel.setText("Search completed.");
     }
 
     @FXML
     private void handleRefresh() {
         searchTextField.clear();
+        resetComboBox(searchRoleComboBox, "Role");
+
         loadCharacters();
+
         messageLabel.setText("");
     }
 
@@ -188,6 +255,7 @@ public class StoryCharacterController {
     private void handleClear() {
         characterTableView.getSelectionModel().clearSelection();
         clearForm();
+
         messageLabel.setText("");
     }
 
@@ -197,13 +265,51 @@ public class StoryCharacterController {
     }
 
     private void fillForm(StoryCharacter character) {
-        firstNameTextField.setText(character.getFirstName() != null ? character.getFirstName() : "");
-        lastNameTextField.setText(character.getLastName() != null ? character.getLastName() : "");
+        firstNameTextField.setText(nullSafe(character.getFirstName()));
+        lastNameTextField.setText(nullSafe(character.getLastName()));
+        roleComboBox.setValue(character.getRole());
     }
 
     private void clearForm() {
         firstNameTextField.clear();
         lastNameTextField.clear();
+        resetComboBox(roleComboBox, "Character role");
+    }
+
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private void resetComboBox(ComboBox comboBox, String promptText) {
+        comboBox.setValue(null);
+        comboBox.getSelectionModel().clearSelection();
+        comboBox.setPromptText(promptText);
+
+        comboBox.setButtonCell(new ListCell() {
+            @Override
+            protected void updateItem(Object item, boolean empty) {
+                super.updateItem(item, empty);
+
+                if (empty || item == null) {
+                    setText(promptText);
+                } else {
+                    setText(item.toString());
+                }
+            }
+        });
+    }
+
+    private String formatRole(CharacterRole role) {
+        if (role == null) {
+            return "";
+        }
+
+        return switch (role) {
+            case MAIN -> "Main";
+            case SUPPORTING -> "Supporting";
+            case ANTAGONIST -> "Antagonist";
+        };
+    }
+
+    private String nullSafe(String value) {
+        return value != null ? value : "";
     }
 
     private boolean safeEqualsIgnoreCase(String first, String second) {

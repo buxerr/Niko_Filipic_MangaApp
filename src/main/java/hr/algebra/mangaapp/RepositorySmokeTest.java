@@ -2,6 +2,7 @@ package hr.algebra.mangaapp;
 
 import hr.algebra.mangaapp.model.*;
 import hr.algebra.mangaapp.model.enums.AuthorType;
+import hr.algebra.mangaapp.model.enums.CharacterRole;
 import hr.algebra.mangaapp.model.enums.MangaStatus;
 import hr.algebra.mangaapp.model.enums.UserRole;
 import hr.algebra.mangaapp.repository.*;
@@ -81,7 +82,7 @@ public class RepositorySmokeTest {
 
         System.out.println("=== STORY CHARACTER TEST ===");
         Long characterId = characterRepository.create(
-                new StoryCharacter("Test", "Character" + suffix)
+                new StoryCharacter("Test", "Character" + suffix, CharacterRole.MAIN)
         );
         StoryCharacter character = characterRepository.findById(characterId).orElseThrow();
         System.out.println("Created character: " + character);

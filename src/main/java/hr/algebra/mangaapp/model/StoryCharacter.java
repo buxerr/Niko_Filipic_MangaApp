@@ -1,23 +1,28 @@
 package hr.algebra.mangaapp.model;
 
+import hr.algebra.mangaapp.model.enums.CharacterRole;
+
 public class StoryCharacter extends BaseEntity {
 
     private String firstName;
     private String lastName;
+    private CharacterRole role;
 
     public StoryCharacter() {
     }
 
-    public StoryCharacter(String firstName, String lastName) {
+    public StoryCharacter(String firstName, String lastName, CharacterRole role) {
         super();
         this.firstName = firstName;
         this.lastName = lastName;
+        this.role = role;
     }
 
-    public StoryCharacter(Long id, String firstName, String lastName) {
+    public StoryCharacter(Long id, String firstName, String lastName, CharacterRole role) {
         super(id);
         this.firstName = firstName;
         this.lastName = lastName;
+        this.role = role;
     }
 
     public String getFirstName() {
@@ -34,6 +39,14 @@ public class StoryCharacter extends BaseEntity {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public CharacterRole getRole() {
+        return role;
+    }
+
+    public void setRole(CharacterRole role) {
+        this.role = role;
     }
 
     public String getFullName() {

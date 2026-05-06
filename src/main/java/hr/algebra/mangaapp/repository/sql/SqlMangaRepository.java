@@ -8,6 +8,7 @@ import hr.algebra.mangaapp.model.Manga;
 import hr.algebra.mangaapp.model.Publisher;
 import hr.algebra.mangaapp.model.StoryCharacter;
 import hr.algebra.mangaapp.model.enums.AuthorType;
+import hr.algebra.mangaapp.model.enums.CharacterRole;
 import hr.algebra.mangaapp.model.enums.MangaStatus;
 import hr.algebra.mangaapp.repository.MangaRepository;
 import hr.algebra.mangaapp.repository.search.MangaSearchCriteria;
@@ -330,7 +331,8 @@ public class SqlMangaRepository implements MangaRepository {
                     characters.add(new StoryCharacter(
                             resultSet.getLong("id"),
                             resultSet.getString("first_name"),
-                            resultSet.getString("last_name")
+                            resultSet.getString("last_name"),
+                            CharacterRole.valueOf(resultSet.getString("role"))
                     ));
                 }
             }
