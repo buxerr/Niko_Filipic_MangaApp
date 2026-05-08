@@ -40,3 +40,6 @@ build/
 
 ### Assets ###
 assets/
+
+### Logs ###
+logs/
