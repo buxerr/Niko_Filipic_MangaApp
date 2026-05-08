@@ -17,8 +17,11 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 
+import java.io.File;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -95,6 +98,9 @@ public class HomeController {
 
     @FXML
     private Label messageLabel;
+
+    @FXML
+    private ImageView detailCoverImageView;
 
     private final MangaRepository mangaRepository = RepositoryFactory.getMangaRepository();
     private final GenreRepository genreRepository = RepositoryFactory.getGenreRepository();
@@ -277,6 +283,32 @@ public class HomeController {
 
         String description = nullSafe(manga.getDescription());
         detailDescriptionLabel.setText(description.isBlank() ? "" : "Synopsis: " + description);
+
+        showCoverPreview(manga.getImagePath());
+    }
+
+    private void showCoverPreview(String imagePath) {
+        if (imagePath == null || imagePath.isBlank()) {
+            detailCoverImageView.setImage(null);
+            return;
+        }
+
+        File imageFile = new File(imagePath);
+
+        if (!imageFile.exists()) {
+            detailCoverImageView.setImage(null);
+            return;
+        }
+
+        Image image = new Image(
+                imageFile.toURI().toString(),
+                140,
+                200,
+                true,
+                true
+        );
+
+        detailCoverImageView.setImage(image);
     }
 
     private void clearDetails() {
@@ -289,6 +321,7 @@ public class HomeController {
         detailGenresLabel.setText("");
         detailCharactersLabel.setText("");
         detailDescriptionLabel.setText("");
+        detailCoverImageView.setImage(null);
 
         detailsBox.setVisible(false);
         detailsBox.setManaged(false);

@@ -20,7 +20,12 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -106,7 +111,12 @@ public class MangaController {
     private ListView<StoryCharacter> selectedCharactersListView;
 
     @FXML
+    private ImageView coverImageView;
+
+    @FXML
     private Label messageLabel;
+
+    private static final Logger log = LoggerFactory.getLogger(MainController.class);
 
     private final MangaRepository mangaRepository = RepositoryFactory.getMangaRepository();
     private final PublisherRepository publisherRepository = RepositoryFactory.getPublisherRepository();
@@ -229,6 +239,39 @@ public class MangaController {
         clearForm();
 
         messageLabel.setText("Manga added.");
+    }
+
+    private String getFileExtension(String fileName) {
+        int lastDotIndex = fileName.lastIndexOf('.');
+
+        if (lastDotIndex == -1) {
+            return "";
+        }
+
+        return fileName.substring(lastDotIndex);
+    }
+
+    private void showCoverPreview(String imagePath) {
+        if (imagePath == null || imagePath.isBlank()) {
+            coverImageView.setImage(null);
+            return;
+        }
+
+        File imageFile = new File(imagePath);
+
+        if (!imageFile.exists()) {
+            coverImageView.setImage(null);
+            return;
+        }
+
+        Image image = new Image(
+                imageFile.toURI().toString(),
+                140,
+                200,
+                true,
+                true
+        );
+        coverImageView.setImage(image);
     }
 
     @FXML
@@ -502,6 +545,7 @@ public class MangaController {
         releaseYearTextField.setText(String.valueOf(manga.getReleaseYear()));
         volumesTextField.setText(String.valueOf(manga.getVolumes()));
         imagePathTextField.setText(nullSafe(manga.getImagePath()));
+        showCoverPreview(manga.getImagePath());
 
         statusComboBox.setValue(manga.getStatus());
         publisherComboBox.setValue(manga.getPublisher());
@@ -531,6 +575,7 @@ public class MangaController {
         releaseYearTextField.clear();
         volumesTextField.clear();
         imagePathTextField.clear();
+        coverImageView.setImage(null);
 
         statusComboBox.getSelectionModel().clearSelection();
         publisherComboBox.getSelectionModel().clearSelection();

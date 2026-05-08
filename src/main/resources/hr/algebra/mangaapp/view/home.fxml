@@ -4,6 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+<?import javafx.scene.image.ImageView?>
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="hr.algebra.mangaapp.controller.HomeController">
@@ -64,17 +65,27 @@
                 <Button text="Clear Selection" onAction="#handleClearSelection"/>
             </HBox>
 
-            <VBox spacing="6">
-                <Label fx:id="detailTitleLabel"/>
-                <Label fx:id="detailPublisherLabel"/>
-                <Label fx:id="detailYearLabel"/>
-                <Label fx:id="detailVolumesLabel"/>
-                <Label fx:id="detailStatusLabel"/>
-                <Label fx:id="detailAuthorsLabel" wrapText="true"/>
-                <Label fx:id="detailGenresLabel" wrapText="true"/>
-                <Label fx:id="detailCharactersLabel" wrapText="true"/>
-                <Label fx:id="detailDescriptionLabel" wrapText="true"/>
-            </VBox>
+            <HBox spacing="12">
+                <StackPane prefWidth="140" prefHeight="200">
+                    <ImageView fx:id="detailCoverImageView"
+                               fitWidth="140"
+                               fitHeight="200"
+                               preserveRatio="true"
+                               smooth="true"/>
+                </StackPane>
+
+                <VBox spacing="6">
+                    <Label fx:id="detailTitleLabel"/>
+                    <Label fx:id="detailPublisherLabel"/>
+                    <Label fx:id="detailYearLabel"/>
+                    <Label fx:id="detailVolumesLabel"/>
+                    <Label fx:id="detailStatusLabel"/>
+                    <Label fx:id="detailAuthorsLabel" wrapText="true"/>
+                    <Label fx:id="detailGenresLabel" wrapText="true"/>
+                    <Label fx:id="detailCharactersLabel" wrapText="true"/>
+                    <Label fx:id="detailDescriptionLabel" wrapText="true"/>
+                </VBox>
+            </HBox>
 
             <Label fx:id="messageLabel"/>
         </VBox>

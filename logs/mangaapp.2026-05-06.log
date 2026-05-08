@@ -1,0 +1,13 @@
+2026-05-06 19:30:52 INFO  h.a.m.controller.LoginController - Login attempt for username: user
+2026-05-06 19:30:52 INFO  h.a.m.controller.LoginController - User logged in successfully: user, role: USER
+2026-05-06 19:30:52 INFO  h.a.m.controller.MainController - Main window opened for user: user, role: USER
+2026-05-06 19:31:09 INFO  h.a.m.controller.MainController - User logged out: user
+2026-05-06 19:31:12 INFO  h.a.m.controller.LoginController - Login attempt for username: admin
+2026-05-06 19:31:12 INFO  h.a.m.controller.LoginController - User logged in successfully: admin, role: ADMIN
+2026-05-06 19:31:12 INFO  h.a.m.controller.MainController - Main window opened for user: admin, role: ADMIN
+2026-05-06 19:31:15 INFO  h.a.m.controller.MainController - User opened Manga management view: admin
+2026-05-06 19:31:17 INFO  h.a.m.controller.MainController - User opened Author management view: admin
+2026-05-06 19:31:18 INFO  h.a.m.controller.MainController - User opened Character management view: admin
+2026-05-06 21:00:15 INFO  h.a.m.controller.LoginController - Login attempt for username: user
+2026-05-06 21:00:15 INFO  h.a.m.controller.LoginController - User logged in successfully: user, role: USER
+2026-05-06 21:00:15 INFO  h.a.m.controller.MainController - Main window opened for user: user, role: USER

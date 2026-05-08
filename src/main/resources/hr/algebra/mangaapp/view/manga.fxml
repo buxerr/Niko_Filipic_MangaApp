@@ -4,6 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+<?import javafx.scene.image.ImageView?>
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="hr.algebra.mangaapp.controller.MangaController">
@@ -53,41 +54,68 @@
                 <tabs>
 
                     <Tab text="Main Info">
-                        <VBox spacing="10">
+                        <HBox spacing="20">
                             <padding>
                                 <Insets top="10" right="10" bottom="10" left="10"/>
                             </padding>
 
-                            <GridPane hgap="10" vgap="8">
-                                <Label text="Title:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-                                <TextField fx:id="titleTextField" promptText="Title"
-                                           GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                            <VBox spacing="10" HBox.hgrow="ALWAYS">
+                                <GridPane hgap="10" vgap="8">
+                                    <Label text="Title:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                                    <TextField fx:id="titleTextField"
+                                               promptText="Title"
+                                               GridPane.rowIndex="0"
+                                               GridPane.columnIndex="1"/>
 
-                                <Label text="Release year:" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
-                                <TextField fx:id="releaseYearTextField" promptText="e.g. 1998"
-                                           GridPane.rowIndex="0" GridPane.columnIndex="3"/>
+                                    <Label text="Release year:" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
+                                    <TextField fx:id="releaseYearTextField"
+                                               promptText="e.g. 1998"
+                                               GridPane.rowIndex="0"
+                                               GridPane.columnIndex="3"/>
 
-                                <Label text="Volumes:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-                                <TextField fx:id="volumesTextField" promptText="e.g. 42"
-                                           GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                                    <Label text="Volumes:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                                    <TextField fx:id="volumesTextField"
+                                               promptText="e.g. 42"
+                                               GridPane.rowIndex="1"
+                                               GridPane.columnIndex="1"/>
 
-                                <Label text="Status:" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
-                                <ComboBox fx:id="statusComboBox" promptText="Status"
-                                          GridPane.rowIndex="1" GridPane.columnIndex="3"/>
+                                    <Label text="Status:" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
+                                    <ComboBox fx:id="statusComboBox"
+                                              promptText="Status"
+                                              GridPane.rowIndex="1"
+                                              GridPane.columnIndex="3"/>
 
-                                <Label text="Publisher:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-                                <ComboBox fx:id="publisherComboBox" promptText="Publisher"
-                                          GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+                                    <Label text="Publisher:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                                    <ComboBox fx:id="publisherComboBox"
+                                              promptText="Publisher"
+                                              GridPane.rowIndex="2"
+                                              GridPane.columnIndex="1"/>
 
-                                <Label text="Image path:" GridPane.rowIndex="2" GridPane.columnIndex="2"/>
-                                <TextField fx:id="imagePathTextField" promptText="assets/covers/image.jpg"
-                                           GridPane.rowIndex="2" GridPane.columnIndex="3"/>
-                            </GridPane>
+                                    <Label text="Image path:" GridPane.rowIndex="2" GridPane.columnIndex="2"/>
+                                    <TextField fx:id="imagePathTextField"
+                                               promptText="assets/covers/image.jpg"
+                                               GridPane.rowIndex="2"
+                                               GridPane.columnIndex="3"/>
+                                </GridPane>
 
-                            <TextArea fx:id="descriptionTextArea"
-                                      promptText="Synopsis / description"
-                                      prefRowCount="3"/>
-                        </VBox>
+                                <TextArea fx:id="descriptionTextArea"
+                                          promptText="Synopsis / description"
+                                          prefRowCount="3"
+                                          wrapText="true"/>
+                            </VBox>
+
+                            <VBox spacing="6">
+                                <Label text="Cover preview"/>
+                                <StackPane prefWidth="140" prefHeight="200">
+                                    <ImageView fx:id="coverImageView"
+                                               fitWidth="140"
+                                               fitHeight="200"
+                                               preserveRatio="true"
+                                               smooth="true"/>
+                                </StackPane>
+                            </VBox>
+
+                        </HBox>
                     </Tab>
 
                     <Tab text="Relations">
