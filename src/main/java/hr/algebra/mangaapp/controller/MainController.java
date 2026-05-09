@@ -1,15 +1,19 @@
 package hr.algebra.mangaapp.controller;
 
 import hr.algebra.mangaapp.exception.ViewLoadException;
+import hr.algebra.mangaapp.model.Author;
 import hr.algebra.mangaapp.model.Genre;
 import hr.algebra.mangaapp.model.Manga;
 import hr.algebra.mangaapp.model.User;
 import hr.algebra.mangaapp.model.enums.MangaStatus;
 import hr.algebra.mangaapp.repository.AdminRepository;
+import hr.algebra.mangaapp.repository.AuthorRepository;
 import hr.algebra.mangaapp.repository.MangaRepository;
 import hr.algebra.mangaapp.repository.RepositoryFactory;
 import hr.algebra.mangaapp.repository.sql.SqlAdminRepository;
+import hr.algebra.mangaapp.xml.MangaXmlExportService;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -17,10 +21,12 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +57,12 @@ public class MainController {
     private AdminRepository adminRepository = RepositoryFactory.getAdminRepository();
 
     private final MangaRepository mangaRepository = RepositoryFactory.getMangaRepository();
+
+    private final AuthorRepository authorRepository =
+            RepositoryFactory.getAuthorRepository();
+
+    private final MangaXmlExportService mangaXmlExportService =
+            new MangaXmlExportService();
 
     private static final Logger log = LoggerFactory.getLogger(MainController.class);
 
@@ -282,12 +294,70 @@ public class MainController {
 
     @FXML
     private void handleImportData() {
-        System.out.println("Import data clicked");
+
     }
 
     @FXML
-    private void handleBackupXml() {
-        System.out.println("Backup XML clicked");
+    private void handleExportXml() {
+        List<Author> authors = authorRepository.findAll();
+
+        if (authors.isEmpty()) {
+            showError("No authors available for XML export.");
+            return;
+        }
+
+        ChoiceDialog<Author> authorDialog = new ChoiceDialog<>(authors.get(0), authors);
+        authorDialog.setTitle("Export XML");
+        authorDialog.setHeaderText("Export manga catalog by author");
+        authorDialog.setContentText("Choose author:");
+
+        authorDialog.showAndWait().ifPresent(selectedAuthor -> {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Save XML catalog");
+
+            fileChooser.getExtensionFilters().add(
+                    new FileChooser.ExtensionFilter("XML files", "*.xml")
+            );
+
+            fileChooser.setInitialFileName(
+                    selectedAuthor.getFullName()
+                            .replaceAll("\\s+", "_")
+                            .toLowerCase()
+                            + "_catalog.xml"
+            );
+
+            File destinationFile = fileChooser.showSaveDialog(
+                    contentPane.getScene().getWindow()
+            );
+
+            if (destinationFile == null) {
+                return;
+            }
+
+            try {
+                mangaXmlExportService.exportCatalogByAuthor(
+                        selectedAuthor,
+                        destinationFile
+                );
+
+                log.info(
+                        "XML catalog exported for author: {}, file={}",
+                        selectedAuthor.getFullName(),
+                        destinationFile.getAbsolutePath()
+                );
+
+                showInfo("XML catalog exported successfully.");
+
+            } catch (Exception e) {
+                log.error(
+                        "Failed to export XML catalog for author: {}",
+                        selectedAuthor.getFullName(),
+                        e
+                );
+
+                showError("Failed to export XML catalog.");
+            }
+        });
     }
 
     private void loadView(String fxmlPath) {

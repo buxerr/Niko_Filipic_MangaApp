@@ -42,31 +42,50 @@ VALUES (
            1989,
            42,
            'ONGOING',
-           'assets/images/berserk.jpg',
+           'assets/covers/berserk.jpg',
            (SELECT id FROM publisher WHERE name = 'Hakusensha')
        );
 
-CALL sp_add_manga_genre(
-    (SELECT id FROM manga WHERE title = 'Berserk'),
-    (SELECT id FROM genre WHERE name = 'Dark Fantasy')
-);
+DO $$
+DECLARE
+v_berserk_id BIGINT;
+    v_dark_fantasy_id BIGINT;
+    v_action_id BIGINT;
+    v_kentaro_miura_id BIGINT;
+    v_guts_id BIGINT;
+    v_griffith_id BIGINT;
+BEGIN
+SELECT id INTO v_berserk_id
+FROM manga
+WHERE title = 'Berserk';
 
-CALL sp_add_manga_genre(
-    (SELECT id FROM manga WHERE title = 'Berserk'),
-    (SELECT id FROM genre WHERE name = 'Action')
-);
+SELECT id INTO v_dark_fantasy_id
+FROM genre
+WHERE name = 'Dark Fantasy';
 
-CALL sp_add_manga_author(
-    (SELECT id FROM manga WHERE title = 'Berserk'),
-    (SELECT id FROM author WHERE first_name = 'Kentaro' AND last_name = 'Miura')
-);
+SELECT id INTO v_action_id
+FROM genre
+WHERE name = 'Action';
 
-CALL sp_add_manga_character(
-    (SELECT id FROM manga WHERE title = 'Berserk'),
-    (SELECT id FROM story_character WHERE first_name = 'Guts')
-);
+SELECT id INTO v_kentaro_miura_id
+FROM author
+WHERE first_name = 'Kentaro'
+  AND last_name = 'Miura';
 
-CALL sp_add_manga_character(
-    (SELECT id FROM manga WHERE title = 'Berserk'),
-    (SELECT id FROM story_character WHERE first_name = 'Griffith')
-);
+SELECT id INTO v_guts_id
+FROM story_character
+WHERE first_name = 'Guts';
+
+SELECT id INTO v_griffith_id
+FROM story_character
+WHERE first_name = 'Griffith';
+
+CALL sp_add_manga_genre(v_berserk_id, v_dark_fantasy_id);
+CALL sp_add_manga_genre(v_berserk_id, v_action_id);
+
+CALL sp_add_manga_author(v_berserk_id, v_kentaro_miura_id);
+
+CALL sp_add_manga_character(v_berserk_id, v_guts_id);
+CALL sp_add_manga_character(v_berserk_id, v_griffith_id);
+END;
+$$;

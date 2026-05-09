@@ -95,7 +95,8 @@
                                     <TextField fx:id="imagePathTextField"
                                                promptText="assets/covers/image.jpg"
                                                GridPane.rowIndex="2"
-                                               GridPane.columnIndex="3"/>
+                                               GridPane.columnIndex="3"
+                                                prefWidth="200"/>
                                 </GridPane>
 
                                 <TextArea fx:id="descriptionTextArea"

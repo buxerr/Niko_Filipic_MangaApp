@@ -33,7 +33,7 @@
             <Menu fx:id="adminMenu" text="Admin">
                 <MenuItem text="Clear Data" onAction="#handleClearData"/>
                 <MenuItem text="Import Data" onAction="#handleImportData"/>
-                <MenuItem text="Backup XML" onAction="#handleBackupXml"/>
+                <MenuItem text="Export XML Catalog" onAction="#handleExportXml"/>
             </Menu>
         </MenuBar>
     </top>

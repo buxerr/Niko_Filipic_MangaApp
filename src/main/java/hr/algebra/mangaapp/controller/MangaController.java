@@ -116,7 +116,7 @@ public class MangaController {
     @FXML
     private Label messageLabel;
 
-    private static final Logger log = LoggerFactory.getLogger(MainController.class);
+    private static final Logger log = LoggerFactory.getLogger(MangaController.class);
 
     private final MangaRepository mangaRepository = RepositoryFactory.getMangaRepository();
     private final PublisherRepository publisherRepository = RepositoryFactory.getPublisherRepository();
@@ -136,6 +136,10 @@ public class MangaController {
         setupComboBoxes();
         setupListViews();
         setupSelectionListener();
+
+        imagePathTextField.textProperty().addListener((observable, oldValue, newValue) ->
+                showCoverPreview(newValue)
+        );
 
         mangaTableView.setItems(mangaItems);
 
