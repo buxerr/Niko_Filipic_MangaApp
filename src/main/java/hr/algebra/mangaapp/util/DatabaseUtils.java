@@ -8,8 +8,6 @@ import java.sql.SQLException;
 
 public final class DatabaseUtils {
 
-    // TODO: Fix admin hash in 03_insert_admin.sql
-
     private static final DatabaseConfig DATABASE_CONFIG =
             XmlConfigUtils.loadDatabaseConfig();
 

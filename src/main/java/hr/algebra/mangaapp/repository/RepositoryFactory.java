@@ -14,30 +14,44 @@ public final class RepositoryFactory {
     }
 
     public static GenreRepository getGenreRepository() {
-        return new SqlGenreRepository();
+        return RepositoryHolder.GENRE_REPOSITORY;
     }
 
     public static PublisherRepository getPublisherRepository() {
-        return new SqlPublisherRepository();
+        return RepositoryHolder.PUBLISHER_REPOSITORY;
     }
 
     public static AuthorRepository getAuthorRepository() {
-        return new SqlAuthorRepository();
+        return RepositoryHolder.AUTHOR_REPOSITORY;
     }
 
     public static StoryCharacterRepository getStoryCharacterRepository() {
-        return new SqlStoryCharacterRepository();
+        return RepositoryHolder.STORY_CHARACTER_REPOSITORY;
     }
 
     public static MangaRepository getMangaRepository() {
-        return new SqlMangaRepository();
+        return RepositoryHolder.MANGA_REPOSITORY;
     }
 
     public static UserRepository getUserRepository() {
-        return new SqlUserRepository();
+        return RepositoryHolder.USER_REPOSITORY;
     }
 
     public static AdminRepository getAdminRepository() {
-        return new SqlAdminRepository();
+        return RepositoryHolder.ADMIN_REPOSITORY;
+    }
+
+    private static final class RepositoryHolder {
+
+        private static final GenreRepository GENRE_REPOSITORY = new SqlGenreRepository();
+        private static final PublisherRepository PUBLISHER_REPOSITORY = new SqlPublisherRepository();
+        private static final AuthorRepository AUTHOR_REPOSITORY = new SqlAuthorRepository();
+        private static final StoryCharacterRepository STORY_CHARACTER_REPOSITORY = new SqlStoryCharacterRepository();
+        private static final MangaRepository MANGA_REPOSITORY = new SqlMangaRepository();
+        private static final UserRepository USER_REPOSITORY = new SqlUserRepository();
+        private static final AdminRepository ADMIN_REPOSITORY = new SqlAdminRepository();
+
+        private RepositoryHolder() {
+        }
     }
 }

@@ -6,11 +6,13 @@ import hr.algebra.mangaapp.model.User;
 import hr.algebra.mangaapp.model.enums.UserRole;
 import hr.algebra.mangaapp.repository.RepositoryFactory;
 import hr.algebra.mangaapp.repository.UserRepository;
-import hr.algebra.mangaapp.repository.sql.SqlUserRepository;
 import hr.algebra.mangaapp.util.PasswordUtils;
+import hr.algebra.mangaapp.util.XmlConfigUtils;
+import hr.algebra.mangaapp.xml.ActionXmlLogService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Dimension2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -19,10 +21,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Optional;
-
-import static hr.algebra.mangaapp.util.PasswordUtils.hashPassword;
 
 public class RegisterController {
 
@@ -82,6 +80,7 @@ public class RegisterController {
 
         if (userRepository.usernameExists(username)) {
             log.warn("Registration failed because username already exists: {}", username);
+            ActionXmlLogService.log(username, UserRole.USER, "REGISTER_FAILED", "Username already exists");
             messageLabel.setText("Username already exists.");
             return;
         }
@@ -97,6 +96,7 @@ public class RegisterController {
 
 
         log.info("New user registered: {}", username);
+        ActionXmlLogService.log(user, "REGISTER_SUCCESS", "New USER account registered");
         openMainWindow(user);
     }
 
@@ -106,7 +106,12 @@ public class RegisterController {
                     getClass().getResource("/hr/algebra/mangaapp/view/main.fxml")
             );
 
-            Scene scene = new Scene(loader.load(), 900, 600);
+            Dimension2D bigScreen = XmlConfigUtils.getBigScreen();
+            Scene scene = new Scene(
+                    loader.load(),
+                    bigScreen.getWidth(),
+                    bigScreen.getHeight()
+            );
 
             MainController mainController = loader.getController();
             mainController.setCurrentUser(user);
@@ -129,7 +134,12 @@ public class RegisterController {
                     MangaApp.class.getResource("/hr/algebra/mangaapp/view/login.fxml")
             );
 
-            Scene scene = new Scene(loader.load(), 400, 300);
+            Dimension2D smallScreen = XmlConfigUtils.getSmallScreen();
+            Scene scene = new Scene(
+                    loader.load(),
+                    smallScreen.getWidth(),
+                    smallScreen.getHeight()
+            );
 
             Stage stage = (Stage) root.getScene().getWindow();
             stage.setTitle("MangaApp - Login");

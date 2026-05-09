@@ -4,26 +4,23 @@ import hr.algebra.mangaapp.model.Author;
 import hr.algebra.mangaapp.model.Genre;
 import hr.algebra.mangaapp.model.Manga;
 import hr.algebra.mangaapp.model.Publisher;
-import hr.algebra.mangaapp.model.StoryCharacter;
 import hr.algebra.mangaapp.model.enums.MangaStatus;
 import hr.algebra.mangaapp.repository.AuthorRepository;
 import hr.algebra.mangaapp.repository.GenreRepository;
 import hr.algebra.mangaapp.repository.MangaRepository;
+import hr.algebra.mangaapp.repository.PublisherRepository;
 import hr.algebra.mangaapp.repository.RepositoryFactory;
 import hr.algebra.mangaapp.repository.search.MangaSearchCriteria;
+import hr.algebra.mangaapp.service.CoverImageService;
+import hr.algebra.mangaapp.service.MangaDisplayService;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
-
-import java.io.File;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class HomeController {
 
@@ -62,6 +59,9 @@ public class HomeController {
 
     @FXML
     private ComboBox<Author> authorComboBox;
+
+    @FXML
+    private ComboBox<Publisher> publisherComboBox;
 
     @FXML
     private ComboBox<MangaStatus> statusComboBox;
@@ -105,6 +105,10 @@ public class HomeController {
     private final MangaRepository mangaRepository = RepositoryFactory.getMangaRepository();
     private final GenreRepository genreRepository = RepositoryFactory.getGenreRepository();
     private final AuthorRepository authorRepository = RepositoryFactory.getAuthorRepository();
+    private final PublisherRepository publisherRepository = RepositoryFactory.getPublisherRepository();
+
+    private final CoverImageService coverImageService = new CoverImageService();
+    private final MangaDisplayService mangaDisplayService = new MangaDisplayService();
 
     private final ObservableList<Manga> mangaItems = FXCollections.observableArrayList();
 
@@ -130,7 +134,7 @@ public class HomeController {
                 new SimpleObjectProperty<>(cellData.getValue().getVolumes()));
 
         statusColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(formatStatus(cellData.getValue().getStatus())));
+                new SimpleStringProperty(mangaDisplayService.formatStatus(cellData.getValue().getStatus())));
 
         publisherColumn.setCellValueFactory(cellData -> {
             Publisher publisher = cellData.getValue().getPublisher();
@@ -141,15 +145,15 @@ public class HomeController {
         });
 
         authorsColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(formatAuthors(cellData.getValue().getAuthors()))
+                new SimpleStringProperty(mangaDisplayService.formatAuthors(cellData.getValue().getAuthors()))
         );
 
         genresColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(formatGenres(cellData.getValue().getGenres()))
+                new SimpleStringProperty(mangaDisplayService.formatGenres(cellData.getValue().getGenres()))
         );
 
         charactersColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(formatCharacters(cellData.getValue().getCharacters()))
+                new SimpleStringProperty(mangaDisplayService.formatCharacters(cellData.getValue().getCharacters()))
         );
     }
 
@@ -162,12 +166,17 @@ public class HomeController {
                 FXCollections.observableArrayList(authorRepository.findAll())
         );
 
+        publisherComboBox.setItems(
+                FXCollections.observableArrayList(publisherRepository.findAll())
+        );
+
         statusComboBox.setItems(
                 FXCollections.observableArrayList(MangaStatus.values())
         );
 
         resetComboBox(genreComboBox, "Genre");
         resetComboBox(authorComboBox, "Author");
+        resetComboBox(publisherComboBox, "Publisher");
         resetComboBox(statusComboBox, "Status");
     }
 
@@ -203,6 +212,12 @@ public class HomeController {
             criteria.setAuthorId(selectedAuthor.getId());
         }
 
+        Publisher selectedPublisher = publisherComboBox.getValue();
+
+        if (selectedPublisher != null) {
+            criteria.setPublisherId(selectedPublisher.getId());
+        }
+
         MangaStatus selectedStatus = statusComboBox.getValue();
 
         if (selectedStatus != null) {
@@ -229,6 +244,7 @@ public class HomeController {
 
         resetComboBox(genreComboBox, "Genre");
         resetComboBox(authorComboBox, "Author");
+        resetComboBox(publisherComboBox, "Publisher");
         resetComboBox(statusComboBox, "Status");
 
         loadMangas();
@@ -267,18 +283,18 @@ public class HomeController {
         }
 
         if (manga.getStatus() != null) {
-            detailStatusLabel.setText("Status: " + formatStatus(manga.getStatus()));
+            detailStatusLabel.setText("Status: " + mangaDisplayService.formatStatus(manga.getStatus()));
         } else {
             detailStatusLabel.setText("");
         }
 
-        String authors = formatAuthors(manga.getAuthors());
+        String authors = mangaDisplayService.formatAuthors(manga.getAuthors());
         detailAuthorsLabel.setText(authors.isBlank() ? "" : "Authors: " + authors);
 
-        String genres = formatGenres(manga.getGenres());
+        String genres = mangaDisplayService.formatGenres(manga.getGenres());
         detailGenresLabel.setText(genres.isBlank() ? "" : "Genres: " + genres);
 
-        String characters = formatCharacters(manga.getCharacters());
+        String characters = mangaDisplayService.formatCharacters(manga.getCharacters());
         detailCharactersLabel.setText(characters.isBlank() ? "" : "Characters: " + characters);
 
         String description = nullSafe(manga.getDescription());
@@ -288,27 +304,7 @@ public class HomeController {
     }
 
     private void showCoverPreview(String imagePath) {
-        if (imagePath == null || imagePath.isBlank()) {
-            detailCoverImageView.setImage(null);
-            return;
-        }
-
-        File imageFile = new File(imagePath);
-
-        if (!imageFile.exists()) {
-            detailCoverImageView.setImage(null);
-            return;
-        }
-
-        Image image = new Image(
-                imageFile.toURI().toString(),
-                140,
-                200,
-                true,
-                true
-        );
-
-        detailCoverImageView.setImage(image);
+        detailCoverImageView.setImage(coverImageService.loadCover(imagePath, 140, 200));
     }
 
     private void clearDetails() {
@@ -347,52 +343,6 @@ public class HomeController {
                 }
             }
         });
-    }
-
-    private String formatAuthors(Set<Author> authors) {
-        if (authors == null || authors.isEmpty()) {
-            return "";
-        }
-
-        return authors.stream()
-                .map(Author::getFullName)
-                .sorted()
-                .collect(Collectors.joining(", "));
-    }
-
-    private String formatGenres(Set<Genre> genres) {
-        if (genres == null || genres.isEmpty()) {
-            return "";
-        }
-
-        return genres.stream()
-                .map(Genre::getName)
-                .sorted()
-                .collect(Collectors.joining(", "));
-    }
-
-    private String formatCharacters(Set<StoryCharacter> characters) {
-        if (characters == null || characters.isEmpty()) {
-            return "";
-        }
-
-        return characters.stream()
-                .map(StoryCharacter::getFullName)
-                .sorted()
-                .collect(Collectors.joining(", "));
-    }
-
-    private String formatStatus(MangaStatus status) {
-        if (status == null) {
-            return "";
-        }
-
-        return switch (status) {
-            case ONGOING -> "Ongoing";
-            case COMPLETED -> "Completed";
-            case HIATUS -> "Hiatus";
-            case CANCELLED -> "Cancelled";
-        };
     }
 
     private String nullSafe(String value) {

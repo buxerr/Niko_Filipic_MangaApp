@@ -14,21 +14,23 @@ import hr.algebra.mangaapp.repository.PublisherRepository;
 import hr.algebra.mangaapp.repository.RepositoryFactory;
 import hr.algebra.mangaapp.repository.StoryCharacterRepository;
 import hr.algebra.mangaapp.repository.search.MangaSearchCriteria;
+import hr.algebra.mangaapp.service.CoverImageService;
+import hr.algebra.mangaapp.service.MangaDisplayService;
+import hr.algebra.mangaapp.service.MangaFormService;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class MangaController {
 
@@ -116,6 +118,9 @@ public class MangaController {
     @FXML
     private Label messageLabel;
 
+    @FXML
+    private ListView<StoryCharacter> availableCharactersListView;
+
     private static final Logger log = LoggerFactory.getLogger(MangaController.class);
 
     private final MangaRepository mangaRepository = RepositoryFactory.getMangaRepository();
@@ -124,11 +129,15 @@ public class MangaController {
     private final GenreRepository genreRepository = RepositoryFactory.getGenreRepository();
     private final StoryCharacterRepository characterRepository = RepositoryFactory.getStoryCharacterRepository();
 
-    private final ObservableList<Manga> mangaItems = FXCollections.observableArrayList();
+    private final CoverImageService coverImageService = new CoverImageService();
+    private final MangaDisplayService mangaDisplayService = new MangaDisplayService();
+    private final MangaFormService mangaFormService = new MangaFormService();
 
+    private final ObservableList<Manga> mangaItems = FXCollections.observableArrayList();
     private final ObservableList<Author> selectedAuthors = FXCollections.observableArrayList();
     private final ObservableList<Genre> selectedGenres = FXCollections.observableArrayList();
     private final ObservableList<StoryCharacter> selectedCharacters = FXCollections.observableArrayList();
+    private final ObservableList<StoryCharacter> availableCharacters = FXCollections.observableArrayList();
 
     @FXML
     private void initialize() {
@@ -160,11 +169,7 @@ public class MangaController {
                 new SimpleObjectProperty<>(cellData.getValue().getVolumes()));
 
         statusColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(
-                        cellData.getValue().getStatus() != null
-                                ? cellData.getValue().getStatus().name()
-                                : ""
-                ));
+                new SimpleStringProperty(mangaDisplayService.formatStatus(cellData.getValue().getStatus())));
 
         publisherColumn.setCellValueFactory(cellData -> {
             Publisher publisher = cellData.getValue().getPublisher();
@@ -175,15 +180,15 @@ public class MangaController {
         });
 
         authorsColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(formatAuthors(cellData.getValue().getAuthors()))
+                new SimpleStringProperty(mangaDisplayService.formatAuthors(cellData.getValue().getAuthors()))
         );
 
         genresColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(formatGenres(cellData.getValue().getGenres()))
+                new SimpleStringProperty(mangaDisplayService.formatGenres(cellData.getValue().getGenres()))
         );
 
         charactersColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(formatCharacters(cellData.getValue().getCharacters()))
+                new SimpleStringProperty(mangaDisplayService.formatCharacters(cellData.getValue().getCharacters()))
         );
     }
 
@@ -208,15 +213,21 @@ public class MangaController {
                 FXCollections.observableArrayList(genreRepository.findAll())
         );
 
-        characterComboBox.setItems(
-                FXCollections.observableArrayList(characterRepository.findAll())
-        );
+        ObservableList<StoryCharacter> characters =
+                FXCollections.observableArrayList(characterRepository.findAll());
+
+        characterComboBox.setItems(characters);
+        availableCharacters.setAll(characters);
     }
 
     private void setupListViews() {
         selectedAuthorsListView.setItems(selectedAuthors);
         selectedGenresListView.setItems(selectedGenres);
         selectedCharactersListView.setItems(selectedCharacters);
+
+        availableCharactersListView.setItems(availableCharacters);
+
+        setupCharacterDragAndDrop();
     }
 
     private void setupSelectionListener() {
@@ -239,43 +250,15 @@ public class MangaController {
 
         mangaRepository.create(manga);
 
+        log.info("Manga added: {}", manga.getTitle());
         loadMangas();
         clearForm();
 
         messageLabel.setText("Manga added.");
     }
 
-    private String getFileExtension(String fileName) {
-        int lastDotIndex = fileName.lastIndexOf('.');
-
-        if (lastDotIndex == -1) {
-            return "";
-        }
-
-        return fileName.substring(lastDotIndex);
-    }
-
     private void showCoverPreview(String imagePath) {
-        if (imagePath == null || imagePath.isBlank()) {
-            coverImageView.setImage(null);
-            return;
-        }
-
-        File imageFile = new File(imagePath);
-
-        if (!imageFile.exists()) {
-            coverImageView.setImage(null);
-            return;
-        }
-
-        Image image = new Image(
-                imageFile.toURI().toString(),
-                140,
-                200,
-                true,
-                true
-        );
-        coverImageView.setImage(image);
+        coverImageView.setImage(coverImageService.loadCover(imagePath, 140, 200));
     }
 
     @FXML
@@ -295,6 +278,7 @@ public class MangaController {
 
         mangaRepository.update(updatedManga);
 
+        log.info("Manga updated: id={}, title={}", updatedManga.getId(), updatedManga.getTitle());
         loadMangas();
         mangaTableView.getSelectionModel().clearSelection();
         clearForm();
@@ -313,6 +297,7 @@ public class MangaController {
 
         mangaRepository.delete(selectedManga.getId());
 
+        log.info("Manga deleted: id={}, title={}", selectedManga.getId(), selectedManga.getTitle());
         loadMangas();
         mangaTableView.getSelectionModel().clearSelection();
         clearForm();
@@ -337,6 +322,13 @@ public class MangaController {
         mangaItems.setAll(mangaRepository.search(criteria));
         mangaTableView.refresh();
 
+        log.info(
+                "Manga search completed: title={}, status={}, publisherId={}, results={}",
+                criteria.getTitle(),
+                criteria.getStatus(),
+                criteria.getPublisherId(),
+                mangaItems.size()
+        );
         messageLabel.setText("Search completed.");
     }
 
@@ -368,6 +360,63 @@ public class MangaController {
                     setText(item.toString());
                 }
             }
+        });
+    }
+
+    private void setupCharacterDragAndDrop() {
+        availableCharactersListView.setOnDragDetected(event -> {
+            StoryCharacter selectedCharacter =
+                    availableCharactersListView.getSelectionModel().getSelectedItem();
+
+            if (selectedCharacter == null || selectedCharacter.getId() == null) {
+                return;
+            }
+
+            Dragboard dragboard = availableCharactersListView.startDragAndDrop(TransferMode.COPY);
+
+            ClipboardContent content = new ClipboardContent();
+            content.putString(String.valueOf(selectedCharacter.getId()));
+
+            dragboard.setContent(content);
+
+            event.consume();
+        });
+
+        selectedCharactersListView.setOnDragOver(event -> {
+            if (event.getGestureSource() != selectedCharactersListView
+                    && event.getDragboard().hasString()) {
+                event.acceptTransferModes(TransferMode.COPY);
+            }
+
+            event.consume();
+        });
+
+        selectedCharactersListView.setOnDragDropped(event -> {
+            Dragboard dragboard = event.getDragboard();
+
+            boolean success = false;
+
+            if (dragboard.hasString()) {
+                try {
+                    Long characterId = Long.parseLong(dragboard.getString());
+
+                    availableCharacters.stream()
+                            .filter(character -> character.getId().equals(characterId))
+                            .findFirst()
+                            .ifPresent(character -> {
+                                addIfNotPresent(selectedCharacters, character);
+                                messageLabel.setText("Character added by drag and drop.");
+                            });
+
+                    success = true;
+
+                } catch (NumberFormatException e) {
+                    messageLabel.setText("Invalid character drag data.");
+                }
+            }
+
+            event.setDropCompleted(success);
+            event.consume();
         });
     }
 
@@ -449,93 +498,26 @@ public class MangaController {
     }
 
     private Manga buildMangaFromForm(Long id) {
-        String title = titleTextField.getText();
-        String description = descriptionTextArea.getText();
-        String imagePath = imagePathTextField.getText();
-
-        if (title == null || title.isBlank()) {
-            messageLabel.setText("Title is required.");
-            return null;
-        }
-
-        Integer releaseYear = parseInteger(releaseYearTextField.getText(), "Release year");
-        if (releaseYear == null) {
-            return null;
-        }
-
-        Integer volumes = parseInteger(volumesTextField.getText(), "Volumes");
-        if (volumes == null) {
-            return null;
-        }
-
-        MangaStatus status = statusComboBox.getValue();
-
-        if (status == null) {
-            messageLabel.setText("Status is required.");
-            return null;
-        }
-
-        Publisher publisher = publisherComboBox.getValue();
-
-        if (publisher == null) {
-            messageLabel.setText("Publisher is required.");
-            return null;
-        }
-
-        description = description == null || description.isBlank()
-                ? null
-                : description.trim();
-
-        imagePath = imagePath == null || imagePath.isBlank()
-                ? null
-                : imagePath.trim();
-
-        Set<StoryCharacter> characters = new HashSet<>(selectedCharacters);
-        Set<Genre> genres = new HashSet<>(selectedGenres);
-        Set<Author> authors = new HashSet<>(selectedAuthors);
-
-        if (id == null) {
-            return new Manga(
-                    title.trim(),
-                    description,
-                    releaseYear,
-                    volumes,
-                    publisher,
-                    imagePath,
-                    status,
-                    characters,
-                    genres,
-                    authors
-            );
-        }
-
-        return new Manga(
+        MangaFormService.MangaFormResult result = mangaFormService.buildManga(
                 id,
-                title.trim(),
-                description,
-                releaseYear,
-                volumes,
-                publisher,
-                imagePath,
-                status,
-                characters,
-                genres,
-                authors
+                titleTextField.getText(),
+                descriptionTextArea.getText(),
+                releaseYearTextField.getText(),
+                volumesTextField.getText(),
+                imagePathTextField.getText(),
+                statusComboBox.getValue(),
+                publisherComboBox.getValue(),
+                selectedCharacters,
+                selectedGenres,
+                selectedAuthors
         );
-    }
 
-    private Integer parseInteger(String value, String fieldName) {
-        if (value == null || value.isBlank()) {
-            messageLabel.setText(fieldName + " is required.");
+        if (!result.isSuccessful()) {
+            messageLabel.setText(result.errorMessage());
             return null;
         }
 
-        try {
-            return Integer.parseInt(value.trim());
-        } catch (NumberFormatException e) {
-            messageLabel.setText(fieldName + " must be a number.");
-            return null;
-        }
+        return result.manga();
     }
 
     private void loadMangas() {
@@ -600,39 +582,6 @@ public class MangaController {
         if (!exists) {
             list.add(item);
         }
-    }
-
-    private String formatAuthors(Set<Author> authors) {
-        if (authors == null || authors.isEmpty()) {
-            return "";
-        }
-
-        return authors.stream()
-                .map(Author::getFullName)
-                .sorted()
-                .collect(Collectors.joining(", "));
-    }
-
-    private String formatGenres(Set<Genre> genres) {
-        if (genres == null || genres.isEmpty()) {
-            return "";
-        }
-
-        return genres.stream()
-                .map(Genre::getName)
-                .sorted()
-                .collect(Collectors.joining(", "));
-    }
-
-    private String formatCharacters(Set<StoryCharacter> characters) {
-        if (characters == null || characters.isEmpty()) {
-            return "";
-        }
-
-        return characters.stream()
-                .map(StoryCharacter::getFullName)
-                .sorted()
-                .collect(Collectors.joining(", "));
     }
 
     private String nullSafe(String value) {

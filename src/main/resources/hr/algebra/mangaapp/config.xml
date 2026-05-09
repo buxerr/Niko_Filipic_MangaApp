@@ -5,4 +5,16 @@
         <username>postgres</username>
         <password>postgres</password>
     </database>
+
+    <screenSizes>
+        <smallScreen>
+            <width>400</width>
+            <height>300</height>
+        </smallScreen>
+
+        <bigScreen>
+            <width>1100</width>
+            <height>1100</height>
+        </bigScreen>
+    </screenSizes>
 </configuration>

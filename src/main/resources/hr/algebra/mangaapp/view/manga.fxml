@@ -147,12 +147,26 @@
 
                             <VBox spacing="5" HBox.hgrow="ALWAYS">
                                 <Label text="Characters"/>
+
+                                <HBox spacing="10">
+                                    <VBox spacing="5" HBox.hgrow="ALWAYS">
+                                        <Label text="Available characters"/>
+                                        <ListView fx:id="availableCharactersListView" prefHeight="110"/>
+                                    </VBox>
+
+                                    <VBox spacing="5" HBox.hgrow="ALWAYS">
+                                        <Label text="Selected characters"/>
+                                        <ListView fx:id="selectedCharactersListView" prefHeight="110"/>
+                                    </VBox>
+                                </HBox>
+
                                 <HBox spacing="5">
                                     <ComboBox fx:id="characterComboBox" promptText="Character"/>
                                     <Button text="Add" onAction="#handleAddCharacter"/>
+                                    <Button text="Remove selected" onAction="#handleRemoveCharacter"/>
                                 </HBox>
-                                <ListView fx:id="selectedCharactersListView" prefHeight="110"/>
-                                <Button text="Remove selected character" onAction="#handleRemoveCharacter"/>
+
+                                <Label text="Tip: Drag a character from Available characters to Selected characters."/>
                             </VBox>
                         </HBox>
                     </Tab>

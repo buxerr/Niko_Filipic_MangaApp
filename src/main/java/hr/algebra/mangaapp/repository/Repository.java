@@ -15,4 +15,8 @@ public interface Repository<T> {
 
     void delete(Long id);
 
+    default boolean existsById(Long id) {
+        return findById(id).isPresent();
+    }
+
 }

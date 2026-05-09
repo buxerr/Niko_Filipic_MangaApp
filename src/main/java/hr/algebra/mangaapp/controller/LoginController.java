@@ -5,12 +5,13 @@ import hr.algebra.mangaapp.exception.ViewLoadException;
 import hr.algebra.mangaapp.model.User;
 import hr.algebra.mangaapp.repository.RepositoryFactory;
 import hr.algebra.mangaapp.repository.UserRepository;
-import hr.algebra.mangaapp.repository.sql.SqlUserRepository;
 import hr.algebra.mangaapp.util.PasswordUtils;
-import javafx.application.Platform;
+import hr.algebra.mangaapp.util.XmlConfigUtils;
+import hr.algebra.mangaapp.xml.ActionXmlLogService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Dimension2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -53,6 +54,7 @@ public class LoginController {
         if (username == null || username.isBlank()
                 || password == null || password.isBlank()) {
             messageLabel.setText("Username and password are required.");
+            ActionXmlLogService.log(username, null, "LOGIN_FAILED", "Missing username or password");
             return;
         }
 
@@ -61,6 +63,7 @@ public class LoginController {
         if (userOptional.isEmpty()) {
             messageLabel.setText("Invalid username or password.");
             log.warn("Failed login attempt for username: {}", username);
+            ActionXmlLogService.log(username, null, "LOGIN_FAILED", "Unknown username");
             return;
         }
 
@@ -71,10 +74,12 @@ public class LoginController {
         if (!PasswordUtils.matches(password, user.getPasswordHash())) {
             messageLabel.setText("Invalid username or password.");
             log.warn("Failed login attempt for username: {}", username);
+            ActionXmlLogService.log(user, "LOGIN_FAILED", "Invalid password");
             return;
         }
 
         log.info("User logged in successfully: {}, role: {}", user.getUsername(), user.getRole());
+        ActionXmlLogService.log(user, "LOGIN_SUCCESS", "User logged in");
         openMainWindow(user);
     }
 
@@ -84,7 +89,12 @@ public class LoginController {
                     getClass().getResource("/hr/algebra/mangaapp/view/main.fxml")
             );
 
-            Scene scene = new Scene(loader.load(), 900, 600);
+            Dimension2D bigScreen = XmlConfigUtils.getBigScreen();
+            Scene scene = new Scene(
+                    loader.load(),
+                    bigScreen.getWidth(),
+                    bigScreen.getHeight()
+            );
 
             MainController mainController = loader.getController();
             mainController.setCurrentUser(user);
@@ -107,7 +117,12 @@ public class LoginController {
                     MangaApp.class.getResource("/hr/algebra/mangaapp/view/register.fxml")
             );
 
-            Scene scene = new Scene(loader.load(), 400, 300);
+            Dimension2D smallScreen = XmlConfigUtils.getSmallScreen();
+            Scene scene = new Scene(
+                    loader.load(),
+                    smallScreen.getWidth(),
+                    smallScreen.getHeight()
+            );
 
             Stage stage = (Stage) root.getScene().getWindow();
             stage.setTitle("MangaApp - Register");

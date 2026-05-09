@@ -27,6 +27,9 @@
                 <ComboBox fx:id="authorComboBox"
                           promptText="Author"/>
 
+                <ComboBox fx:id="publisherComboBox"
+                          promptText="Publisher"/>
+
                 <ComboBox fx:id="statusComboBox"
                           promptText="Status"/>
 
