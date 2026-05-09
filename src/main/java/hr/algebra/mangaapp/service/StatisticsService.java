@@ -3,6 +3,7 @@ package hr.algebra.mangaapp.service;
 import hr.algebra.mangaapp.model.Genre;
 import hr.algebra.mangaapp.model.Manga;
 import hr.algebra.mangaapp.model.enums.MangaStatus;
+import hr.algebra.mangaapp.xml.SaxActionLogReader;
 
 import java.util.Comparator;
 import java.util.List;
@@ -15,9 +16,13 @@ import java.util.stream.Collectors;
 
 public class StatisticsService {
 
+    private final SaxActionLogReader saxActionLogReader = new SaxActionLogReader();
+
     public String buildReport(List<Manga> mangas) {
         if (mangas == null || mangas.isEmpty()) {
-            return "No manga/comics available in the catalog.";
+            return "No manga/comics available in the catalog."
+                    + "\n\n"
+                    + buildActionLogStatistics();
         }
 
         long totalManga = mangas.size();
@@ -96,6 +101,46 @@ public class StatisticsService {
                 .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
                 .forEach(appendEntry);
 
+        sb.append("\nXML ACTION LOG BY TYPE (SAX)\n");
+        appendActionLogStatistics(sb, appendEntry);
+
         return sb.toString();
+    }
+
+    private String buildActionLogStatistics() {
+        StringBuilder sb = new StringBuilder();
+        Consumer<Map.Entry<?, Long>> appendEntry = entry ->
+                sb.append(entry.getKey())
+                        .append(": ")
+                        .append(entry.getValue())
+                        .append("\n");
+
+        sb.append("XML ACTION LOG BY TYPE (SAX)\n");
+        appendActionLogStatistics(sb, appendEntry);
+
+        return sb.toString();
+    }
+
+    private void appendActionLogStatistics(
+            StringBuilder sb,
+            Consumer<Map.Entry<?, Long>> appendEntry
+    ) {
+        try {
+            Map<String, Long> actionCounts = saxActionLogReader.countActionsByType();
+
+            if (actionCounts.isEmpty()) {
+                sb.append("No XML action log entries available.\n");
+                return;
+            }
+
+            actionCounts.entrySet().stream()
+                    .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
+                    .forEach(appendEntry);
+
+        } catch (RuntimeException e) {
+            sb.append("Could not read XML action log with SAX: ")
+                    .append(e.getMessage())
+                    .append("\n");
+        }
     }
 }

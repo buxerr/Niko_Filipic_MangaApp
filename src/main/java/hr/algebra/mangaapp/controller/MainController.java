@@ -9,10 +9,12 @@ import hr.algebra.mangaapp.repository.AuthorRepository;
 import hr.algebra.mangaapp.repository.MangaRepository;
 import hr.algebra.mangaapp.repository.RepositoryFactory;
 import hr.algebra.mangaapp.service.BackgroundTaskService;
+import hr.algebra.mangaapp.service.CoverImageService;
 import hr.algebra.mangaapp.service.JikanMangaImportService;
 import hr.algebra.mangaapp.service.StatisticsService;
 import hr.algebra.mangaapp.util.XmlConfigUtils;
 import hr.algebra.mangaapp.xml.ActionXmlLogService;
+import hr.algebra.mangaapp.xml.DatabaseBackupXmlService;
 import hr.algebra.mangaapp.xml.MangaXmlExportService;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -63,12 +65,17 @@ public class MainController {
     private final MangaXmlExportService mangaXmlExportService =
             new MangaXmlExportService();
 
+    private final DatabaseBackupXmlService databaseBackupXmlService =
+            new DatabaseBackupXmlService();
+
     private final JikanMangaImportService jikanMangaImportService =
             new JikanMangaImportService();
 
     private final StatisticsService statisticsService = new StatisticsService();
 
     private final BackgroundTaskService backgroundTaskService = new BackgroundTaskService();
+
+    private final CoverImageService coverImageService = new CoverImageService();
 
     private static final Logger log = LoggerFactory.getLogger(MainController.class);
 
@@ -211,13 +218,28 @@ public class MainController {
         confirmationAlert.setHeaderText("Are you sure you want to clear all application data?");
         confirmationAlert.setContentText(
                 "This will delete all manga, genres, authors, publishers, characters and users. " +
+                        "Referenced cover images will be deleted from assets/covers. " +
                         "The admin account will be recreated."
         );
 
         confirmationAlert.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
+                List<String> coverImagePaths = mangaRepository.findAll().stream()
+                        .map(Manga::getImagePath)
+                        .toList();
+
                 adminRepository.clearAllData();
-                logCurrentUserAction("CLEAR_DATA", "All application data cleared and admin recreated");
+
+                long deletedCoverCount = coverImagePaths.stream()
+                        .distinct()
+                        .filter(coverImageService::deleteCoverIfExists)
+                        .count();
+
+                log.info("Clear data deleted cover files: {}", deletedCoverCount);
+                logCurrentUserAction(
+                        "CLEAR_DATA",
+                        "All application data cleared and admin recreated. Deleted covers=" + deletedCoverCount
+                );
 
                 contentPane.getChildren().clear();
                 welcomeLabel.setText("All data cleared. Admin account was recreated.");
@@ -349,6 +371,35 @@ public class MainController {
         });
     }
 
+    @FXML
+    private void handleExportBackupXml() {
+        if (currentUser == null || !currentUser.isAdmin()) {
+            showError("Only administrators can export database backup XML.");
+            logCurrentUserAction("XML_BACKUP_DENIED", "Non-admin user tried to export database backup XML");
+            return;
+        }
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save Database Backup XML");
+
+        fileChooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("XML files", "*.xml")
+        );
+
+        fileChooser.setInitialFileName("mangaapp_database_backup.xml");
+
+        File destinationFile = fileChooser.showSaveDialog(
+                contentPane.getScene().getWindow()
+        );
+
+        if (destinationFile == null) {
+            logCurrentUserAction("XML_BACKUP_CANCELLED", "Database backup XML destination was not selected");
+            return;
+        }
+
+        runXmlBackupTask(destinationFile);
+    }
+
     private void runXmlExportTask(Author selectedAuthor, File destinationFile) {
         logCurrentUserAction(
                 "XML_EXPORT_STARTED",
@@ -405,6 +456,52 @@ public class MainController {
                     logCurrentUserAction(
                             "XML_EXPORT_CANCELLED",
                             "Export cancelled for author " + selectedAuthor.getFullName()
+                    );
+                }
+        );
+    }
+
+    private void runXmlBackupTask(File destinationFile) {
+        logCurrentUserAction(
+                "XML_BACKUP_STARTED",
+                "file=" + destinationFile.getName()
+        );
+
+        backgroundTaskService.run(
+                "Export Backup XML",
+                "Exporting database backup",
+                "Creating XML database backup...",
+                "Cancelling XML database backup...",
+                "database-backup-xml-export-task",
+                isCancelled -> databaseBackupXmlService.exportBackup(destinationFile),
+                result -> {
+                    log.info(
+                            "Database backup XML exported: file={}, {}",
+                            destinationFile.getAbsolutePath(),
+                            result.toLogDetails()
+                    );
+                    logCurrentUserAction(
+                            "XML_BACKUP_SUCCESS",
+                            "file=" + destinationFile.getName() + ", " + result.toLogDetails()
+                    );
+
+                    showInfo(result.toUserMessage());
+                },
+                exception -> {
+                    log.error("Failed to export database backup XML", exception);
+                    logCurrentUserAction(
+                            "XML_BACKUP_FAILED",
+                            "file=" + destinationFile.getName()
+                                    + ", error=" + getErrorMessage(exception)
+                    );
+
+                    showError("Failed to export database backup XML: " + getErrorMessage(exception));
+                },
+                () -> {
+                    log.info("Database backup XML export cancelled");
+                    logCurrentUserAction(
+                            "XML_BACKUP_CANCELLED",
+                            "Export cancelled for file " + destinationFile.getName()
                     );
                 }
         );

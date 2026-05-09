@@ -270,6 +270,7 @@ public class MangaController {
             return;
         }
 
+        String oldImagePath = selectedManga.getImagePath();
         Manga updatedManga = buildMangaFromForm(selectedManga.getId());
 
         if (updatedManga == null) {
@@ -277,6 +278,7 @@ public class MangaController {
         }
 
         mangaRepository.update(updatedManga);
+        deleteOldCoverIfImagePathChanged(oldImagePath, updatedManga.getImagePath());
 
         log.info("Manga updated: id={}, title={}", updatedManga.getId(), updatedManga.getTitle());
         loadMangas();
@@ -296,6 +298,7 @@ public class MangaController {
         }
 
         mangaRepository.delete(selectedManga.getId());
+        deleteCoverIfNoLongerUsed(selectedManga.getImagePath());
 
         log.info("Manga deleted: id={}, title={}", selectedManga.getId(), selectedManga.getTitle());
         loadMangas();
@@ -586,5 +589,33 @@ public class MangaController {
 
     private String nullSafe(String value) {
         return value != null ? value : "";
+    }
+
+    private void deleteOldCoverIfImagePathChanged(String oldImagePath, String newImagePath) {
+        if (!sameImagePath(oldImagePath, newImagePath)) {
+            deleteCoverIfNoLongerUsed(oldImagePath);
+        }
+    }
+
+    private void deleteCoverIfNoLongerUsed(String imagePath) {
+        if (imagePath == null || imagePath.isBlank()) {
+            return;
+        }
+
+        boolean imageStillInUse = mangaRepository.findAll().stream()
+                .map(Manga::getImagePath)
+                .anyMatch(existingPath -> sameImagePath(existingPath, imagePath));
+
+        if (!imageStillInUse) {
+            coverImageService.deleteCoverIfExists(imagePath);
+        }
+    }
+
+    private boolean sameImagePath(String firstPath, String secondPath) {
+        return normalizeImagePath(firstPath).equalsIgnoreCase(normalizeImagePath(secondPath));
+    }
+
+    private String normalizeImagePath(String imagePath) {
+        return imagePath == null ? "" : imagePath.trim().replace('\\', '/');
     }
 }

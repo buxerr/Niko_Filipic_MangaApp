@@ -34,6 +34,7 @@
                 <MenuItem text="Clear Data" onAction="#handleClearData"/>
                 <MenuItem text="Import Data" onAction="#handleImportData"/>
                 <MenuItem text="Export XML Catalog" onAction="#handleExportXml"/>
+                <MenuItem text="Export Backup XML" onAction="#handleExportBackupXml"/>
             </Menu>
         </MenuBar>
     </top>
