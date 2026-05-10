@@ -470,6 +470,20 @@ RETURN new_id;
 END;
 $$;
 
+CREATE OR REPLACE PROCEDURE sp_create_user(
+    p_username VARCHAR,
+    p_password_hash VARCHAR,
+    p_role VARCHAR
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+INSERT INTO app_user (username, password_hash, role)
+VALUES (p_username, p_password_hash, p_role)
+    ON CONFLICT (username) DO NOTHING;
+END;
+$$;
+
 CREATE OR REPLACE FUNCTION fn_find_user_by_id(
     p_id BIGINT
 )
@@ -987,11 +1001,10 @@ TRUNCATE TABLE
         app_user
     RESTART IDENTITY CASCADE;
 
-INSERT INTO app_user (username, password_hash, role)
-VALUES (
-           'admin',
-           '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918',
-           'ADMIN'
-       );
+CALL sp_create_user(
+        'admin',
+        '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918',
+        'ADMIN'
+     );
 END;
 $$;

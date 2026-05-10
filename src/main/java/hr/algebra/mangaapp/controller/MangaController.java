@@ -568,10 +568,15 @@ public class MangaController {
 
         statusComboBox.getSelectionModel().clearSelection();
         publisherComboBox.getSelectionModel().clearSelection();
-
         authorComboBox.getSelectionModel().clearSelection();
         genreComboBox.getSelectionModel().clearSelection();
         characterComboBox.getSelectionModel().clearSelection();
+
+        resetComboBox(statusComboBox, "Status");
+        resetComboBox(publisherComboBox, "Publisher");
+        resetComboBox(authorComboBox, "Author");
+        resetComboBox(genreComboBox, "Genre");
+        resetComboBox(characterComboBox, "Character");
 
         selectedAuthors.clear();
         selectedGenres.clear();

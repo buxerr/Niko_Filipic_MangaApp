@@ -266,7 +266,14 @@ Brisanje svih aplikacijskih podataka radi kroz proceduru:
 CALL sp_clear_all_data();
 ```
 
+Zasebna ručna skripta za brisanje podataka nalazi se u:
+
+```text
+database/scripts/04_admin_clear_all_data.sql
+```
+
 Procedura nakon brisanja ponovno kreira admin korisnika s hashiranom lozinkom.
+Inicijalni administrator iz `03_insert_admin.sql` također se kreira pozivom procedure `sp_create_user(...)`, a ne direktnim `INSERT`-om.
 
 ## Repository sloj
 
