@@ -16,13 +16,14 @@ import java.util.function.Function;
 
 public class BackgroundTaskService {
 
+    //Generic method to run a background task with progress indication and cancellation support
     public <T> void run(
             String title,
             String headerText,
             String progressMessage,
             String cancelMessage,
             String threadName,
-            Function<BooleanSupplier, T> backgroundAction,
+            Function<BooleanSupplier, T> backgroundAction, // Function that needs to be done in thread
             Consumer<T> onSuccess,
             Consumer<Throwable> onFailure,
             Runnable onCancel
@@ -32,10 +33,11 @@ public class BackgroundTaskService {
         Task<T> task = new Task<>() {
             @Override
             protected T call() {
-                return backgroundAction.apply(this::isCancelled);
+                return backgroundAction.apply(this::isCancelled); //Adding the function to the new thread
             }
         };
 
+        //Making a progress alert with cancellation button
         Alert progressAlert = new Alert(Alert.AlertType.INFORMATION);
         progressAlert.setTitle(title);
         progressAlert.setHeaderText(headerText);
@@ -87,6 +89,6 @@ public class BackgroundTaskService {
         });
 
         progressAlert.show();
-        taskThread.start();
+        taskThread.start(); // Running thread
     }
 }

@@ -114,6 +114,11 @@ public class GenreController {
             return;
         }
 
+        if (genreRepository.existsByName(name)) {
+            messageLabel.setText("Genre name already exists.");
+            return;
+        }
+
         Genre updatedGenre = new Genre(
                 selectedGenre.getId(),
                 name.trim(),
@@ -149,9 +154,8 @@ public class GenreController {
     @FXML
     private void handleSearch() {
         String query = searchTextField.getText();
-        genreTableView.setItems(
-                FXCollections.observableArrayList(genreRepository.search(query))
-        );
+        genreItems.setAll(genreRepository.search(query));
+        genreTableView.setItems(genreItems);
     }
 
     @FXML

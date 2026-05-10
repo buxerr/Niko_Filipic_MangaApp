@@ -16,6 +16,7 @@ public class SaxActionLogReader {
 
     private static final Path ACTION_LOG_PATH = Path.of("logs", "action-log.xml");
 
+    //Starting method
     public Map<String, Long> countActionsByType() {
         if (!Files.isRegularFile(ACTION_LOG_PATH)) {
             return Map.of();
@@ -34,6 +35,7 @@ public class SaxActionLogReader {
         }
     }
 
+    //Creates a SAXParser with safety features
     private SAXParser createParser() throws Exception {
         SAXParserFactory factory = SAXParserFactory.newInstance();
         factory.setNamespaceAware(false);
@@ -45,6 +47,7 @@ public class SaxActionLogReader {
         return factory.newSAXParser();
     }
 
+    //SAX Handler, passed to SAX
     private static class ActionTypeCounterHandler extends DefaultHandler {
 
         private final Map<String, Long> actionCounts = new TreeMap<>();
@@ -52,6 +55,7 @@ public class SaxActionLogReader {
 
         private boolean readingType;
 
+        //Reads opening tags, if the opening tag is not "type" it does nothing, otherwise sets the read flag to true
         @Override
         public void startElement(
                 String uri,
@@ -65,6 +69,7 @@ public class SaxActionLogReader {
             }
         }
 
+        //Reads the text inside the tags, returns text as char field. If the read flag is true, it adds the text to the currentText stringBuilder
         @Override
         public void characters(char[] ch, int start, int length) {
             if (readingType) {
@@ -72,6 +77,7 @@ public class SaxActionLogReader {
             }
         }
 
+        //Reads closing tags, if the closing tag is "type", it gets the text from currentText, trims it and if it's not blank, it adds it to the actionCounts map. Then resets the flag and currentText
         @Override
         public void endElement(String uri, String localName, String qName) throws SAXException {
             if ("type".equals(qName)) {
@@ -86,6 +92,7 @@ public class SaxActionLogReader {
             }
         }
 
+        //Returns an unmodifiable copy of the actionCounts map
         private Map<String, Long> getActionCounts() {
             return Map.copyOf(actionCounts);
         }

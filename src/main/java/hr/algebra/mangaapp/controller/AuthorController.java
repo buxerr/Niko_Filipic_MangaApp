@@ -263,5 +263,6 @@ public class AuthorController {
         firstNameTextField.clear();
         lastNameTextField.clear();
         orientationComboBox.getSelectionModel().clearSelection();
+        resetComboBox(orientationComboBox, "Orientation");
     }
 }

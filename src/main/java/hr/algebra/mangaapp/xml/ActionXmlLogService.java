@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
@@ -87,6 +88,8 @@ public final class ActionXmlLogService {
 
     private static DocumentBuilder createDocumentBuilder() throws Exception {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+
+        //Security features to prevent XML External Entity attacks
         factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
         factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
 
@@ -105,18 +108,38 @@ public final class ActionXmlLogService {
     }
 
     private static void writeDocument(Document document) throws Exception {
+        removeWhitespaceTextNodes(document.getDocumentElement());
+
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
         transformerFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
 
         Transformer transformer = transformerFactory.newTransformer();
-        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-        transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-        transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes"); // add newlines between elements
+        transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8"); // write as UTF-8
+        transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4"); // use 4 spaces per indent level
 
+        // Write in ram document to file at path
         transformer.transform(
                 new DOMSource(document),
                 new StreamResult(ACTION_LOG_PATH.toFile())
         );
+    }
+
+
+    //Recursive function, goes through the xml removing blank text nodes
+    //Needed because OutputKeys.INDENT adds newlines which compound after every write, we keep the INDENT for readability, but then need to remove whitespaces
+    private static void removeWhitespaceTextNodes(Node node) {
+        //Iterate backwards because we may be removing nodes while iterating
+        for (int i = node.getChildNodes().getLength() - 1; i >= 0; i--) {
+            Node childNode = node.getChildNodes().item(i);
+
+            if (childNode.getNodeType() == Node.TEXT_NODE && childNode.getTextContent().isBlank()) {
+                node.removeChild(childNode);
+                continue;
+            }
+
+            removeWhitespaceTextNodes(childNode);
+        }
     }
 
     private static String safeValue(String value) {
