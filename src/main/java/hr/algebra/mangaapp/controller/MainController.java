@@ -80,7 +80,6 @@ public class MainController {
         boolean isAdmin = currentUser.isAdmin();
 
         if (!isAdmin) {
-            menuBar.getMenus().remove(manageMenu);
             menuBar.getMenus().remove(adminMenu);
         } else {
             if (!menuBar.getMenus().contains(manageMenu)) {
