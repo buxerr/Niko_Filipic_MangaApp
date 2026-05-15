@@ -4,6 +4,7 @@ import hr.algebra.mangaapp.model.Author;
 import hr.algebra.mangaapp.model.enums.AuthorType;
 import hr.algebra.mangaapp.repository.AuthorRepository;
 import hr.algebra.mangaapp.repository.RepositoryFactory;
+import hr.algebra.mangaapp.util.ComboBoxUtils;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -223,28 +224,9 @@ public class AuthorController {
         authorTableView.getSelectionModel().clearSelection();
         clearForm();
 
-        resetComboBox(orientationComboBox, "Orientation");
+        ComboBoxUtils.resetWithPrompt(orientationComboBox, "Orientation");
 
         messageLabel.setText("");
-    }
-
-    private void resetComboBox(ComboBox comboBox, String promptText) {
-        comboBox.setValue(null);
-        comboBox.getSelectionModel().clearSelection();
-        comboBox.setPromptText(promptText);
-
-        comboBox.setButtonCell(new ListCell() {
-            @Override
-            protected void updateItem(Object item, boolean empty) {
-                super.updateItem(item, empty);
-
-                if (empty || item == null) {
-                    setText(promptText);
-                } else {
-                    setText(item.toString());
-                }
-            }
-        });
     }
 
     private void loadAuthors() {
@@ -262,6 +244,6 @@ public class AuthorController {
         firstNameTextField.clear();
         lastNameTextField.clear();
         orientationComboBox.getSelectionModel().clearSelection();
-        resetComboBox(orientationComboBox, "Orientation");
+        ComboBoxUtils.resetWithPrompt(orientationComboBox, "Orientation");
     }
 }

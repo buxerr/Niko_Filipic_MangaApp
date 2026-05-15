@@ -8,11 +8,18 @@ import hr.algebra.mangaapp.model.enums.UserRole;
 import hr.algebra.mangaapp.repository.*;
 import hr.algebra.mangaapp.repository.search.MangaSearchCriteria;
 import hr.algebra.mangaapp.repository.sql.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashSet;
 import java.util.Set;
 
-public class RepositorySmokeTest {
+public final class RepositorySmokeTest {
+
+    private static final Logger log = LoggerFactory.getLogger(RepositorySmokeTest.class);
+
+    private RepositorySmokeTest() {
+    }
 
     public static void main(String[] args) {
         GenreRepository genreRepository = new SqlGenreRepository();
@@ -24,80 +31,72 @@ public class RepositorySmokeTest {
 
         String suffix = String.valueOf(System.currentTimeMillis());
 
-        System.out.println("=== GENRE TEST ===");
+        log.info("=== GENRE TEST ===");
         Long genreId = genreRepository.create(
                 new Genre("Test Genre " + suffix, "Created from RepositorySmokeTest")
         );
         Genre genre = genreRepository.findById(genreId).orElseThrow();
-        System.out.println("Created genre: " + genre);
+        log.info("Created genre: {}", genre);
 
         genre.setDescription("Updated genre description");
         genreRepository.update(genre);
-        System.out.println("Updated genre: " + genreRepository.findById(genreId).orElseThrow());
+        log.info("Updated genre: {}", genreRepository.findById(genreId).orElseThrow());
 
-        System.out.println("Search genres:");
-        genreRepository.search("Test Genre").forEach(System.out::println);
-
-        System.out.println();
+        log.info("Search genres:");
+        genreRepository.search("Test Genre").forEach(g -> log.info("{}", g));
 
 
-        System.out.println("=== PUBLISHER TEST ===");
+        log.info("=== PUBLISHER TEST ===");
         Long publisherId = publisherRepository.create(
                 new Publisher("Test Publisher " + suffix)
         );
         Publisher publisher = publisherRepository.findById(publisherId).orElseThrow();
-        System.out.println("Created publisher: " + publisher);
+        log.info("Created publisher: {}", publisher);
 
         publisher.setName("Updated Publisher " + suffix);
         publisherRepository.update(publisher);
         publisher = publisherRepository.findById(publisherId).orElseThrow();
-        System.out.println("Updated publisher: " + publisher);
+        log.info("Updated publisher: {}", publisher);
 
-        System.out.println("Search publishers:");
-        publisherRepository.search("Updated Publisher").forEach(System.out::println);
-
-        System.out.println();
+        log.info("Search publishers:");
+        publisherRepository.search("Updated Publisher").forEach(p -> log.info("{}", p));
 
 
-        System.out.println("=== AUTHOR TEST ===");
+        log.info("=== AUTHOR TEST ===");
         Long authorId = authorRepository.create(
                 new Author("Test", "Author" + suffix, AuthorType.MANGAKA)
         );
         Author author = authorRepository.findById(authorId).orElseThrow();
-        System.out.println("Created author: " + author);
+        log.info("Created author: {}", author);
 
         author.setFirstName("Updated");
         author.setLastName("Author" + suffix);
         authorRepository.update(author);
         author = authorRepository.findById(authorId).orElseThrow();
-        System.out.println("Updated author: " + author);
+        log.info("Updated author: {}", author);
 
-        System.out.println("Search authors:");
-        authorRepository.search("Updated").forEach(System.out::println);
-
-        System.out.println();
+        log.info("Search authors:");
+        authorRepository.search("Updated").forEach(a -> log.info("{}", a));
 
 
-        System.out.println("=== STORY CHARACTER TEST ===");
+        log.info("=== STORY CHARACTER TEST ===");
         Long characterId = characterRepository.create(
                 new StoryCharacter("Test", "Character" + suffix, CharacterRole.MAIN)
         );
         StoryCharacter character = characterRepository.findById(characterId).orElseThrow();
-        System.out.println("Created character: " + character);
+        log.info("Created character: {}", character);
 
         character.setFirstName("Updated");
         character.setLastName("Character" + suffix);
         characterRepository.update(character);
         character = characterRepository.findById(characterId).orElseThrow();
-        System.out.println("Updated character: " + character);
+        log.info("Updated character: {}", character);
 
-        System.out.println("Search characters:");
-        characterRepository.search("Updated").forEach(System.out::println);
-
-        System.out.println();
+        log.info("Search characters:");
+        characterRepository.search("Updated").forEach(c -> log.info("{}", c));
 
 
-        System.out.println("=== USER TEST ===");
+        log.info("=== USER TEST ===");
         String username = "testuser_" + suffix;
 
         Long userId = userRepository.create(
@@ -105,18 +104,17 @@ public class RepositorySmokeTest {
         );
 
         User user = userRepository.findById(userId).orElseThrow();
-        System.out.println("Created user: " + user);
+        log.info("Created user: {}", user);
 
-        System.out.println("Find by username:");
-        System.out.println(userRepository.findByUsername(username).orElseThrow());
+        log.info("Find by username:");
+        log.info("{}", userRepository.findByUsername(username).orElseThrow());
 
-        System.out.println("Username exists:");
-        System.out.println(userRepository.usernameExists(username));
-
-        System.out.println();
+        log.info("Username exists:");
+        log.info("{}", userRepository.usernameExists(username));
 
 
-        System.out.println("=== MANGA TEST ===");
+
+        log.info("=== MANGA TEST ===");
 
         Manga manga = new Manga(
                 "Test Manga " + suffix,
@@ -134,7 +132,7 @@ public class RepositorySmokeTest {
         Long mangaId = mangaRepository.create(manga);
 
         Manga createdManga = mangaRepository.findById(mangaId).orElseThrow();
-        System.out.println("Created manga:");
+        log.info("Created manga:");
         printManga(createdManga);
 
         createdManga.setDescription("Updated manga description");
@@ -142,49 +140,46 @@ public class RepositorySmokeTest {
         mangaRepository.update(createdManga);
 
         Manga updatedManga = mangaRepository.findById(mangaId).orElseThrow();
-        System.out.println("Updated manga:");
+        log.info("Updated manga:");
         printManga(updatedManga);
 
-        System.out.println("Search manga by title:");
+        log.info("Search manga by title:");
         MangaSearchCriteria criteria = new MangaSearchCriteria()
                 .setTitle("Test Manga " + suffix);
 
         mangaRepository.search(criteria).forEach(RepositorySmokeTest::printManga);
 
-        System.out.println();
 
-
-        System.out.println("=== CLEANUP ===");
+        log.info("=== CLEANUP ===");
 
         mangaRepository.delete(mangaId);
-        System.out.println("Deleted manga id: " + mangaId);
+        log.info("Deleted manga id: {}", mangaId);
 
         userRepository.delete(userId);
-        System.out.println("Deleted user id: " + userId);
+        log.info("Deleted user id: {}", userId);
 
         characterRepository.delete(characterId);
-        System.out.println("Deleted character id: " + characterId);
+        log.info("Deleted character id: {}", characterId);
 
         authorRepository.delete(authorId);
-        System.out.println("Deleted author id: " + authorId);
+        log.info("Deleted author id: {}", authorId);
 
         genreRepository.delete(genreId);
-        System.out.println("Deleted genre id: " + genreId);
+        log.info("Deleted genre id: {}", genreId);
 
         publisherRepository.delete(publisherId);
-        System.out.println("Deleted publisher id: " + publisherId);
+        log.info("Deleted publisher id: {}", publisherId);
 
-        System.out.println();
-        System.out.println("Repository smoke test finished successfully.");
+        log.info("Repository smoke test finished successfully.");
     }
 
     private static void printManga(Manga manga) {
-        System.out.println(manga);
-        System.out.println("Publisher: " + manga.getPublisher());
-        System.out.println("Genres: " + manga.getGenres());
-        System.out.println("Authors: " + manga.getAuthors());
-        System.out.println("Characters: " + manga.getCharacters());
-        System.out.println("Image path: " + manga.getImagePath());
-        System.out.println("-------------------------");
+        log.info("{}", manga);
+        log.info("Publisher: {}", manga.getPublisher());
+        log.info("Genres: {}", manga.getGenres());
+        log.info("Authors: {}", manga.getAuthors());
+        log.info("Characters: {}", manga.getCharacters());
+        log.info("Image path: {}", manga.getImagePath());
+        log.info("-------------------------");
     }
 }

@@ -4,6 +4,7 @@ import hr.algebra.mangaapp.model.StoryCharacter;
 import hr.algebra.mangaapp.model.enums.CharacterRole;
 import hr.algebra.mangaapp.repository.RepositoryFactory;
 import hr.algebra.mangaapp.repository.StoryCharacterRepository;
+import hr.algebra.mangaapp.util.ComboBoxUtils;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -86,8 +87,8 @@ public class StoryCharacterController {
                 FXCollections.observableArrayList(CharacterRole.values())
         );
 
-        resetComboBox(roleComboBox, "Character role");
-        resetComboBox(searchRoleComboBox, "Role");
+        ComboBoxUtils.resetWithPrompt(roleComboBox, "Character role");
+        ComboBoxUtils.resetWithPrompt(searchRoleComboBox, "Role");
     }
 
     private void setupSelectionListener() {
@@ -244,7 +245,7 @@ public class StoryCharacterController {
     @FXML
     private void handleRefresh() {
         searchTextField.clear();
-        resetComboBox(searchRoleComboBox, "Role");
+        ComboBoxUtils.resetWithPrompt(searchRoleComboBox, "Role");
 
         loadCharacters();
 
@@ -273,27 +274,7 @@ public class StoryCharacterController {
     private void clearForm() {
         firstNameTextField.clear();
         lastNameTextField.clear();
-        resetComboBox(roleComboBox, "Character role");
-    }
-
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private void resetComboBox(ComboBox comboBox, String promptText) {
-        comboBox.setValue(null);
-        comboBox.getSelectionModel().clearSelection();
-        comboBox.setPromptText(promptText);
-
-        comboBox.setButtonCell(new ListCell() {
-            @Override
-            protected void updateItem(Object item, boolean empty) {
-                super.updateItem(item, empty);
-
-                if (empty || item == null) {
-                    setText(promptText);
-                } else {
-                    setText(item.toString());
-                }
-            }
-        });
+        ComboBoxUtils.resetWithPrompt(roleComboBox, "Character role");
     }
 
     private String formatRole(CharacterRole role) {

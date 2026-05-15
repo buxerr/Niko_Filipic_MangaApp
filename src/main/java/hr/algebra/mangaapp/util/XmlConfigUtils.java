@@ -5,10 +5,13 @@ import hr.algebra.mangaapp.model.config.DatabaseConfig;
 import javafx.geometry.Dimension2D;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
 import java.io.InputStream;
 
 public final class XmlConfigUtils {
@@ -19,28 +22,21 @@ public final class XmlConfigUtils {
     }
 
     public static DatabaseConfig loadDatabaseConfig() {
-        try {
-            Document document = loadConfigDocument();
+        Document document = loadConfigDocument();
 
-            Element databaseElement = (Element) document
-                    .getElementsByTagName("database")
-                    .item(0);
+        Element databaseElement = (Element) document
+                .getElementsByTagName("database")
+                .item(0);
 
-            if (databaseElement == null) {
-                throw new ConfigurationException("Missing <database> element in config.xml");
-            }
-
-            String url = getTagValue(databaseElement, "url");
-            String username = getTagValue(databaseElement, "username");
-            String password = getTagValue(databaseElement, "password");
-
-            return new DatabaseConfig(url, username, password);
-
-        } catch (ConfigurationException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new ConfigurationException("Error while reading database configuration", e);
+        if (databaseElement == null) {
+            throw new ConfigurationException("Missing <database> element in config.xml");
         }
+
+        String url = getTagValue(databaseElement, "url");
+        String username = getTagValue(databaseElement, "username");
+        String password = getTagValue(databaseElement, "password");
+
+        return new DatabaseConfig(url, username, password);
     }
 
     public static Dimension2D getSmallScreen() {
@@ -52,35 +48,28 @@ public final class XmlConfigUtils {
     }
 
     private static Dimension2D getScreenSize(String screenSizeTagName) {
-        try {
-            Document document = loadConfigDocument();
+        Document document = loadConfigDocument();
 
-            Element screenSizesElement = (Element) document
-                    .getElementsByTagName("screenSizes")
-                    .item(0);
+        Element screenSizesElement = (Element) document
+                .getElementsByTagName("screenSizes")
+                .item(0);
 
-            if (screenSizesElement == null) {
-                throw new ConfigurationException("Missing <screenSizes> element in config.xml");
-            }
-
-            Element screenSizeElement = (Element) screenSizesElement
-                    .getElementsByTagName(screenSizeTagName)
-                    .item(0);
-
-            if (screenSizeElement == null) {
-                throw new ConfigurationException("Missing <" + screenSizeTagName + "> element in config.xml");
-            }
-
-            double width = getPositiveDoubleTagValue(screenSizeElement, "width");
-            double height = getPositiveDoubleTagValue(screenSizeElement, "height");
-
-            return new Dimension2D(width, height);
-
-        } catch (ConfigurationException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new ConfigurationException("Error while reading screen size configuration", e);
+        if (screenSizesElement == null) {
+            throw new ConfigurationException("Missing <screenSizes> element in config.xml");
         }
+
+        Element screenSizeElement = (Element) screenSizesElement
+                .getElementsByTagName(screenSizeTagName)
+                .item(0);
+
+        if (screenSizeElement == null) {
+            throw new ConfigurationException("Missing <" + screenSizeTagName + "> element in config.xml");
+        }
+
+        double width = getPositiveDoubleTagValue(screenSizeElement, "width");
+        double height = getPositiveDoubleTagValue(screenSizeElement, "height");
+
+        return new Dimension2D(width, height);
     }
 
     private static Document loadConfigDocument() {
@@ -101,7 +90,7 @@ public final class XmlConfigUtils {
 
         } catch (ConfigurationException e) {
             throw e;
-        } catch (Exception e) {
+        } catch (ParserConfigurationException | SAXException | IOException e) {
             throw new ConfigurationException("Error while reading config.xml", e);
         }
     }

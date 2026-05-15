@@ -10,6 +10,7 @@ import hr.algebra.mangaapp.repository.search.MangaSearchCriteria;
 import hr.algebra.mangaapp.xml.dto.MangaCatalogXmlDto;
 import hr.algebra.mangaapp.xml.dto.MangaXmlDto;
 import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
 
 import java.io.File;
@@ -50,8 +51,8 @@ public class MangaXmlExportService {
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             marshaller.marshal(catalog, destinationFile);
 
-        } catch (Exception e) {
-            throw new RuntimeException("Error while exporting manga catalog to XML", e);
+        } catch (JAXBException e) {
+            throw new IllegalStateException("Error while exporting manga catalog to XML", e);
         }
     }
 

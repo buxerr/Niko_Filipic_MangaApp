@@ -13,6 +13,7 @@ import hr.algebra.mangaapp.repository.RepositoryFactory;
 import hr.algebra.mangaapp.repository.search.MangaSearchCriteria;
 import hr.algebra.mangaapp.service.CoverImageService;
 import hr.algebra.mangaapp.service.MangaDisplayService;
+import hr.algebra.mangaapp.util.ComboBoxUtils;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -174,10 +175,10 @@ public class HomeController {
                 FXCollections.observableArrayList(MangaStatus.values())
         );
 
-        resetComboBox(genreComboBox, "Genre");
-        resetComboBox(authorComboBox, "Author");
-        resetComboBox(publisherComboBox, "Publisher");
-        resetComboBox(statusComboBox, "Status");
+        ComboBoxUtils.resetWithPrompt(genreComboBox, "Genre");
+        ComboBoxUtils.resetWithPrompt(authorComboBox, "Author");
+        ComboBoxUtils.resetWithPrompt(publisherComboBox, "Publisher");
+        ComboBoxUtils.resetWithPrompt(statusComboBox, "Status");
     }
 
     private void setupSelectionListener() {
@@ -242,10 +243,10 @@ public class HomeController {
     private void handleRefresh() {
         searchTitleTextField.clear();
 
-        resetComboBox(genreComboBox, "Genre");
-        resetComboBox(authorComboBox, "Author");
-        resetComboBox(publisherComboBox, "Publisher");
-        resetComboBox(statusComboBox, "Status");
+        ComboBoxUtils.resetWithPrompt(genreComboBox, "Genre");
+        ComboBoxUtils.resetWithPrompt(authorComboBox, "Author");
+        ComboBoxUtils.resetWithPrompt(publisherComboBox, "Publisher");
+        ComboBoxUtils.resetWithPrompt(statusComboBox, "Status");
 
         loadMangas();
         clearDetails();
@@ -323,26 +324,6 @@ public class HomeController {
         detailsBox.setManaged(false);
 
         mangaTableView.getSelectionModel().clearSelection();
-    }
-
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private void resetComboBox(ComboBox comboBox, String promptText) {
-        comboBox.setValue(null);
-        comboBox.getSelectionModel().clearSelection();
-        comboBox.setPromptText(promptText);
-
-        comboBox.setButtonCell(new ListCell() {
-            @Override
-            protected void updateItem(Object item, boolean empty) {
-                super.updateItem(item, empty);
-
-                if (empty || item == null) {
-                    setText(promptText);
-                } else {
-                    setText(item.toString());
-                }
-            }
-        });
     }
 
     private String nullSafe(String value) {

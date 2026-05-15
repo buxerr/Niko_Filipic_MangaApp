@@ -3,7 +3,6 @@ package hr.algebra.mangaapp.controller;
 import hr.algebra.mangaapp.model.Genre;
 import hr.algebra.mangaapp.repository.GenreRepository;
 import hr.algebra.mangaapp.repository.RepositoryFactory;
-import hr.algebra.mangaapp.repository.sql.SqlGenreRepository;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -15,7 +14,7 @@ import javafx.scene.layout.BorderPane;
 public class GenreController {
 
     @FXML
-    public BorderPane root;
+    private BorderPane root;
 
     @FXML
     private TableView<Genre> genreTableView;

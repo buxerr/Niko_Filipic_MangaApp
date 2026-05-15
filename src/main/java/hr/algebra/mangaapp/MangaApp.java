@@ -7,11 +7,11 @@ import javafx.geometry.Dimension2D;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-public class MangaApp extends Application {
+import java.io.IOException;
 
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) throws IOException {
         FXMLLoader loader = new FXMLLoader(
                 MangaApp.class.getResource("/hr/algebra/mangaapp/view/login.fxml")
         );

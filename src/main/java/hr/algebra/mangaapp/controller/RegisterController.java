@@ -21,10 +21,12 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+
 public class RegisterController {
 
     @FXML
-    public VBox root;
+    private VBox root;
 
     @FXML
     private TextField usernameTextField;
@@ -90,7 +92,7 @@ public class RegisterController {
         );
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Created user could not be found."));
+                .orElseThrow(() -> new IllegalStateException("Created user could not be found."));
 
 
         log.info("New user registered: {}", username);
@@ -119,7 +121,7 @@ public class RegisterController {
             stage.setResizable(true);
             stage.centerOnScreen();
 
-        } catch (Exception e) {
+        } catch (IOException e) {
             log.error("Unexpected error during registration", e);
             throw new ViewLoadException("Error while opening main window", e);
         }
@@ -144,9 +146,9 @@ public class RegisterController {
             stage.setResizable(false);
             stage.show();
 
-        } catch (Exception e) {
-            log.error("Unexpected error during registration", e);
-            throw new ViewLoadException("Error while opening main window", e);
+        } catch (IOException e) {
+            log.error("Unexpected error while opening login view", e);
+            throw new ViewLoadException("Error while opening login view", e);
         }
     }
 }

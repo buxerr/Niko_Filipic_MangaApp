@@ -14,7 +14,7 @@ import javafx.scene.layout.BorderPane;
 public class PublisherController {
 
     @FXML
-    public BorderPane root;
+    private BorderPane root;
 
     @FXML
     private TableView<Publisher> publisherTableView;

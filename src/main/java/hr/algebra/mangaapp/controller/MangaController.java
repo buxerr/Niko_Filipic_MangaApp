@@ -17,6 +17,7 @@ import hr.algebra.mangaapp.repository.search.MangaSearchCriteria;
 import hr.algebra.mangaapp.service.CoverImageService;
 import hr.algebra.mangaapp.service.MangaDisplayService;
 import hr.algebra.mangaapp.service.MangaFormService;
+import hr.algebra.mangaapp.util.ComboBoxUtils;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -341,29 +342,10 @@ public class MangaController {
 
         loadMangas();
 
-        resetComboBox(searchStatusComboBox, "Status");
-        resetComboBox(searchPublisherComboBox, "Publisher");
+        ComboBoxUtils.resetWithPrompt(searchStatusComboBox, "Status");
+        ComboBoxUtils.resetWithPrompt(searchPublisherComboBox, "Publisher");
 
         messageLabel.setText("");
-    }
-
-    private void resetComboBox(ComboBox comboBox, String promptText) {
-        comboBox.setValue(null);
-        comboBox.getSelectionModel().clearSelection();
-        comboBox.setPromptText(promptText);
-
-        comboBox.setButtonCell(new ListCell() {
-            @Override
-            protected void updateItem(Object item, boolean empty) {
-                super.updateItem(item, empty);
-
-                if (empty || item == null) {
-                    setText(promptText);
-                } else {
-                    setText(item.toString());
-                }
-            }
-        });
     }
 
     private void setupCharacterDragAndDrop() {
@@ -428,11 +410,11 @@ public class MangaController {
         mangaTableView.getSelectionModel().clearSelection();
         clearForm();
 
-        resetComboBox(statusComboBox, "Status");
-        resetComboBox(publisherComboBox, "Publisher");
-        resetComboBox(authorComboBox, "Author");
-        resetComboBox(genreComboBox, "Genre");
-        resetComboBox(characterComboBox, "Character");
+        ComboBoxUtils.resetWithPrompt(statusComboBox, "Status");
+        ComboBoxUtils.resetWithPrompt(publisherComboBox, "Publisher");
+        ComboBoxUtils.resetWithPrompt(authorComboBox, "Author");
+        ComboBoxUtils.resetWithPrompt(genreComboBox, "Genre");
+        ComboBoxUtils.resetWithPrompt(characterComboBox, "Character");
 
         messageLabel.setText("");
     }
@@ -572,11 +554,11 @@ public class MangaController {
         genreComboBox.getSelectionModel().clearSelection();
         characterComboBox.getSelectionModel().clearSelection();
 
-        resetComboBox(statusComboBox, "Status");
-        resetComboBox(publisherComboBox, "Publisher");
-        resetComboBox(authorComboBox, "Author");
-        resetComboBox(genreComboBox, "Genre");
-        resetComboBox(characterComboBox, "Character");
+        ComboBoxUtils.resetWithPrompt(statusComboBox, "Status");
+        ComboBoxUtils.resetWithPrompt(publisherComboBox, "Publisher");
+        ComboBoxUtils.resetWithPrompt(authorComboBox, "Author");
+        ComboBoxUtils.resetWithPrompt(genreComboBox, "Genre");
+        ComboBoxUtils.resetWithPrompt(characterComboBox, "Character");
 
         selectedAuthors.clear();
         selectedGenres.clear();

@@ -20,12 +20,13 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.Optional;
 
 public class LoginController {
 
     @FXML
-    public VBox root;
+    private VBox root;
 
     @FXML
     private TextField usernameTextField;
@@ -100,8 +101,8 @@ public class LoginController {
             stage.setResizable(true);
             stage.centerOnScreen();
 
-        } catch (Exception e) {
-            log.error("Unexpected error during login", e);
+        } catch (IOException e) {
+            log.error("Unexpected error while opening main window", e);
             throw new ViewLoadException("Error while opening main window", e);
         }
     }
@@ -125,9 +126,9 @@ public class LoginController {
             stage.setResizable(false);
             stage.show();
 
-        } catch (Exception e) {
-            log.error("Unexpected error during login", e);
-            throw new ViewLoadException("Error while opening main window", e);
+        } catch (IOException e) {
+            log.error("Unexpected error while opening register view", e);
+            throw new ViewLoadException("Error while opening register view", e);
         }
     }
 }

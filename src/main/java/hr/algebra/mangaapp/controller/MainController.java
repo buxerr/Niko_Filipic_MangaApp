@@ -28,12 +28,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 public class MainController {
 
     @FXML
-    public BorderPane root;
+    private BorderPane root;
 
     @FXML
     private StackPane contentPane;
@@ -48,11 +49,11 @@ public class MainController {
     private Menu adminMenu;
 
     @FXML
-    public Menu manageMenu;
+    private Menu manageMenu;
 
     private User currentUser;
 
-    private AdminRepository adminRepository = RepositoryFactory.getAdminRepository();
+    private final AdminRepository adminRepository = RepositoryFactory.getAdminRepository();
 
     private final MangaRepository mangaRepository = RepositoryFactory.getMangaRepository();
 
@@ -135,7 +136,7 @@ public class MainController {
             stage.setTitle("MangaApp - Login");
             stage.setScene(scene);
             stage.setResizable(false);
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new ViewLoadException("Error while loading login view", e);
         }
 
@@ -315,7 +316,7 @@ public class MainController {
 
             log.debug("View loaded successfully: {}", fxmlPath);
 
-        } catch (Exception e) {
+        } catch (IOException e) {
             log.error("Failed to load view: {}", fxmlPath, e);
             throw new ViewLoadException("Error while loading view: " + fxmlPath, e);
         }
