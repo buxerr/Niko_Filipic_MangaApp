@@ -8,7 +8,6 @@ import hr.algebra.mangaapp.repository.RepositoryFactory;
 import hr.algebra.mangaapp.repository.UserRepository;
 import hr.algebra.mangaapp.util.PasswordUtils;
 import hr.algebra.mangaapp.util.XmlConfigUtils;
-import hr.algebra.mangaapp.xml.ActionXmlLogService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -80,7 +79,6 @@ public class RegisterController {
 
         if (userRepository.usernameExists(username)) {
             log.warn("Registration failed because username already exists: {}", username);
-            ActionXmlLogService.log(username, UserRole.USER, "REGISTER_FAILED", "Username already exists");
             messageLabel.setText("Username already exists.");
             return;
         }
@@ -96,7 +94,6 @@ public class RegisterController {
 
 
         log.info("New user registered: {}", username);
-        ActionXmlLogService.log(user, "REGISTER_SUCCESS", "New USER account registered");
         openMainWindow(user);
     }
 

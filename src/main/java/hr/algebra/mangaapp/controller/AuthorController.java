@@ -4,7 +4,6 @@ import hr.algebra.mangaapp.model.Author;
 import hr.algebra.mangaapp.model.enums.AuthorType;
 import hr.algebra.mangaapp.repository.AuthorRepository;
 import hr.algebra.mangaapp.repository.RepositoryFactory;
-import hr.algebra.mangaapp.repository.sql.SqlAuthorRepository;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;

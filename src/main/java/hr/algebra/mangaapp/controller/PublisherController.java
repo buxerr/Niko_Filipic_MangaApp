@@ -3,7 +3,6 @@ package hr.algebra.mangaapp.controller;
 import hr.algebra.mangaapp.model.Publisher;
 import hr.algebra.mangaapp.repository.PublisherRepository;
 import hr.algebra.mangaapp.repository.RepositoryFactory;
-import hr.algebra.mangaapp.repository.sql.SqlPublisherRepository;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;

@@ -3,8 +3,6 @@ package hr.algebra.mangaapp.repository.sql;
 import hr.algebra.mangaapp.exception.RepositoryException;
 import hr.algebra.mangaapp.repository.Repository;
 import hr.algebra.mangaapp.util.DatabaseUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 import java.util.ArrayList;

@@ -7,7 +7,6 @@ import hr.algebra.mangaapp.repository.RepositoryFactory;
 import hr.algebra.mangaapp.repository.UserRepository;
 import hr.algebra.mangaapp.util.PasswordUtils;
 import hr.algebra.mangaapp.util.XmlConfigUtils;
-import hr.algebra.mangaapp.xml.ActionXmlLogService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -54,7 +53,6 @@ public class LoginController {
         if (username == null || username.isBlank()
                 || password == null || password.isBlank()) {
             messageLabel.setText("Username and password are required.");
-            ActionXmlLogService.log(username, null, "LOGIN_FAILED", "Missing username or password");
             return;
         }
 
@@ -63,7 +61,6 @@ public class LoginController {
         if (userOptional.isEmpty()) {
             messageLabel.setText("Invalid username or password.");
             log.warn("Failed login attempt for username: {}", username);
-            ActionXmlLogService.log(username, null, "LOGIN_FAILED", "Unknown username");
             return;
         }
 
@@ -74,12 +71,10 @@ public class LoginController {
         if (!PasswordUtils.matches(password, user.getPasswordHash())) {
             messageLabel.setText("Invalid username or password.");
             log.warn("Failed login attempt for username: {}", username);
-            ActionXmlLogService.log(user, "LOGIN_FAILED", "Invalid password");
             return;
         }
 
         log.info("User logged in successfully: {}, role: {}", user.getUsername(), user.getRole());
-        ActionXmlLogService.log(user, "LOGIN_SUCCESS", "User logged in");
         openMainWindow(user);
     }
 
