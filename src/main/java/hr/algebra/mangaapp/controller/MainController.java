@@ -8,7 +8,6 @@ import hr.algebra.mangaapp.repository.AdminRepository;
 import hr.algebra.mangaapp.repository.AuthorRepository;
 import hr.algebra.mangaapp.repository.MangaRepository;
 import hr.algebra.mangaapp.repository.RepositoryFactory;
-import hr.algebra.mangaapp.service.BackgroundTaskService;
 import hr.algebra.mangaapp.service.CoverImageService;
 import hr.algebra.mangaapp.service.StatisticsService;
 import hr.algebra.mangaapp.util.XmlConfigUtils;
@@ -64,8 +63,6 @@ public class MainController {
             new MangaXmlExportService();
 
     private final StatisticsService statisticsService = new StatisticsService();
-
-    private final BackgroundTaskService backgroundTaskService = new BackgroundTaskService();
 
     private final CoverImageService coverImageService = new CoverImageService();
 
@@ -263,47 +260,30 @@ public class MainController {
                 return;
             }
 
-            runXmlExportTask(selectedAuthor, destinationFile);
+            exportXmlCatalog(selectedAuthor, destinationFile);
         });
     }
 
-    private void runXmlExportTask(Author selectedAuthor, File destinationFile) {
-        backgroundTaskService.run(
-                "Export XML",
-                "Exporting XML catalog",
-                "Creating XML catalog...",
-                "Cancelling XML export...",
-                "manga-xml-export-task",
-                isCancelled -> {
-                    if (!isCancelled.getAsBoolean()) {
-                        mangaXmlExportService.exportCatalogByAuthor(
-                                selectedAuthor,
-                                destinationFile
-                        );
-                    }
+    private void exportXmlCatalog(Author selectedAuthor, File destinationFile) {
+        try {
+            mangaXmlExportService.exportCatalogByAuthor(selectedAuthor, destinationFile);
 
-                    return null;
-                },
-                ignored -> {
-                    log.info(
-                            "XML catalog exported for author: {}, file={}",
-                            selectedAuthor.getFullName(),
-                            destinationFile.getAbsolutePath()
-                    );
+            log.info(
+                    "XML catalog exported for author: {}, file={}",
+                    selectedAuthor.getFullName(),
+                    destinationFile.getAbsolutePath()
+            );
 
-                    showInfo("XML catalog exported successfully.");
-                },
-                exception -> {
-                    log.error(
-                            "Failed to export XML catalog for author: {}",
-                            selectedAuthor.getFullName(),
-                            exception
-                    );
+            showInfo("XML catalog exported successfully.");
+        } catch (RuntimeException exception) {
+            log.error(
+                    "Failed to export XML catalog for author: {}",
+                    selectedAuthor.getFullName(),
+                    exception
+            );
 
-                    showError("Failed to export XML catalog.");
-                },
-                () -> log.info("XML export cancelled for author: {}", selectedAuthor.getFullName())
-        );
+            showError("Failed to export XML catalog.");
+        }
     }
 
     private void loadView(String fxmlPath) {
