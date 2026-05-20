@@ -23,8 +23,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -66,14 +64,8 @@ public class MainController {
 
     private final CoverImageService coverImageService = new CoverImageService();
 
-    private static final Logger log = LoggerFactory.getLogger(MainController.class);
-
     public void setCurrentUser(User currentUser) {
         this.currentUser = currentUser;
-
-        log.info("Main window opened for user: {}, role: {}",
-                currentUser.getUsername(),
-                currentUser.getRole());
 
         boolean isAdmin = currentUser.isAdmin();
 
@@ -113,11 +105,6 @@ public class MainController {
 
     @FXML
     private void handleLogout() {
-        if (currentUser != null) {
-            log.info("User logged out: {}", currentUser.getUsername());
-        } else {
-            log.warn("Logout requested but currentUser is null");
-        }
         try {
             FXMLLoader loader = new FXMLLoader(
                     getClass().getResource("/hr/algebra/mangaapp/view/login.fxml")
@@ -141,45 +128,36 @@ public class MainController {
 
     @FXML
     private void handleExit() {
-        log.info("Application exit requested by user: {}",
-                currentUser != null ? currentUser.getUsername() : "unknown");
-
         Platform.exit();
     }
 
     @FXML
     private void handleHome() {
-        log.info("User opened Home view: {}", currentUser.getUsername());
         loadView("/hr/algebra/mangaapp/view/home.fxml");
     }
 
     @FXML
     private void handleManga() {
-        log.info("User opened Manga management view: {}", currentUser.getUsername());
         loadView("/hr/algebra/mangaapp/view/manga.fxml");
     }
 
     @FXML
     private void handleGenres() {
-        log.info("User opened Genre management view: {}", currentUser.getUsername());
         loadView("/hr/algebra/mangaapp/view/genre.fxml");
     }
 
     @FXML
     private void handleAuthors() {
-        log.info("User opened Author management view: {}", currentUser.getUsername());
         loadView("/hr/algebra/mangaapp/view/author.fxml");
     }
 
     @FXML
     private void handlePublishers() {
-        log.info("User opened Publisher management view: {}", currentUser.getUsername());
         loadView("/hr/algebra/mangaapp/view/publisher.fxml");
     }
 
     @FXML
     private void handleCharacters() {
-        log.info("User opened Character management view: {}", currentUser.getUsername());
         loadView("/hr/algebra/mangaapp/view/story-character.fxml");
     }
 
@@ -207,12 +185,9 @@ public class MainController {
 
                 adminRepository.clearAllData();
 
-                long deletedCoverCount = coverImagePaths.stream()
+                coverImagePaths.stream()
                         .distinct()
-                        .filter(coverImageService::deleteCoverIfExists)
-                        .count();
-
-                log.info("Clear data deleted cover files: {}", deletedCoverCount);
+                        .forEach(coverImageService::deleteCoverIfExists);
 
                 contentPane.getChildren().clear();
                 welcomeLabel.setText("All data cleared. Admin account was recreated.");
@@ -267,37 +242,18 @@ public class MainController {
     private void exportXmlCatalog(Author selectedAuthor, File destinationFile) {
         try {
             mangaXmlExportService.exportCatalogByAuthor(selectedAuthor, destinationFile);
-
-            log.info(
-                    "XML catalog exported for author: {}, file={}",
-                    selectedAuthor.getFullName(),
-                    destinationFile.getAbsolutePath()
-            );
-
             showInfo("XML catalog exported successfully.");
         } catch (RuntimeException exception) {
-            log.error(
-                    "Failed to export XML catalog for author: {}",
-                    selectedAuthor.getFullName(),
-                    exception
-            );
-
             showError("Failed to export XML catalog.");
         }
     }
 
     private void loadView(String fxmlPath) {
         try {
-            log.debug("Loading view: {}", fxmlPath);
-
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Parent view = loader.load();
             contentPane.getChildren().setAll(view);
-
-            log.debug("View loaded successfully: {}", fxmlPath);
-
         } catch (IOException e) {
-            log.error("Failed to load view: {}", fxmlPath, e);
             throw new ViewLoadException("Error while loading view: " + fxmlPath, e);
         }
     }

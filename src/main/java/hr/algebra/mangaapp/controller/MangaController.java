@@ -28,8 +28,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Set;
 
@@ -121,8 +119,6 @@ public class MangaController {
 
     @FXML
     private ListView<StoryCharacter> availableCharactersListView;
-
-    private static final Logger log = LoggerFactory.getLogger(MangaController.class);
 
     private final MangaRepository mangaRepository = RepositoryFactory.getMangaRepository();
     private final PublisherRepository publisherRepository = RepositoryFactory.getPublisherRepository();
@@ -251,7 +247,6 @@ public class MangaController {
 
         mangaRepository.create(manga);
 
-        log.info("Manga added: {}", manga.getTitle());
         loadMangas();
         clearForm();
 
@@ -281,7 +276,6 @@ public class MangaController {
         mangaRepository.update(updatedManga);
         deleteOldCoverIfImagePathChanged(oldImagePath, updatedManga.getImagePath());
 
-        log.info("Manga updated: id={}, title={}", updatedManga.getId(), updatedManga.getTitle());
         loadMangas();
         mangaTableView.getSelectionModel().clearSelection();
         clearForm();
@@ -301,7 +295,6 @@ public class MangaController {
         mangaRepository.delete(selectedManga.getId());
         deleteCoverIfNoLongerUsed(selectedManga.getImagePath());
 
-        log.info("Manga deleted: id={}, title={}", selectedManga.getId(), selectedManga.getTitle());
         loadMangas();
         mangaTableView.getSelectionModel().clearSelection();
         clearForm();
@@ -326,13 +319,6 @@ public class MangaController {
         mangaItems.setAll(mangaRepository.search(criteria));
         mangaTableView.refresh();
 
-        log.info(
-                "Manga search completed: title={}, status={}, publisherId={}, results={}",
-                criteria.getTitle(),
-                criteria.getStatus(),
-                criteria.getPublisherId(),
-                mangaItems.size()
-        );
         messageLabel.setText("Search completed.");
     }
 
