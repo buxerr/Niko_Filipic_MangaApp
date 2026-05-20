@@ -9,8 +9,7 @@ import hr.algebra.mangaapp.repository.AuthorRepository;
 import hr.algebra.mangaapp.repository.MangaRepository;
 import hr.algebra.mangaapp.repository.RepositoryFactory;
 import hr.algebra.mangaapp.service.CoverImageService;
-import hr.algebra.mangaapp.service.StatisticsService;
-import hr.algebra.mangaapp.util.XmlConfigUtils;
+import hr.algebra.mangaapp.util.ConfigUtils;
 import hr.algebra.mangaapp.xml.MangaXmlExportService;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -60,8 +59,6 @@ public class MainController {
     private final MangaXmlExportService mangaXmlExportService =
             new MangaXmlExportService();
 
-    private final StatisticsService statisticsService = new StatisticsService();
-
     private final CoverImageService coverImageService = new CoverImageService();
 
     public void setCurrentUser(User currentUser) {
@@ -85,32 +82,13 @@ public class MainController {
     }
 
     @FXML
-    private void handleStatistics() {
-        List<Manga> mangas = mangaRepository.findAll();
-
-        String report = statisticsService.buildReport(mangas);
-
-        TextArea textArea = new TextArea(report);
-        textArea.setEditable(false);
-        textArea.setWrapText(true);
-        textArea.setPrefWidth(650);
-        textArea.setPrefHeight(450);
-
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("MangaApp Statistics");
-        alert.setHeaderText("Catalog statistics");
-        alert.getDialogPane().setContent(textArea);
-        alert.showAndWait();
-    }
-
-    @FXML
     private void handleLogout() {
         try {
             FXMLLoader loader = new FXMLLoader(
                     getClass().getResource("/hr/algebra/mangaapp/view/login.fxml")
             );
 
-            Dimension2D smallScreen = XmlConfigUtils.getSmallScreen();
+            Dimension2D smallScreen = ConfigUtils.getSmallScreen();
             Scene scene = new Scene(
                     loader.load(),
                     smallScreen.getWidth(),

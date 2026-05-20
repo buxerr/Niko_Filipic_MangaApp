@@ -7,7 +7,7 @@ import hr.algebra.mangaapp.model.enums.UserRole;
 import hr.algebra.mangaapp.repository.RepositoryFactory;
 import hr.algebra.mangaapp.repository.UserRepository;
 import hr.algebra.mangaapp.util.PasswordUtils;
-import hr.algebra.mangaapp.util.XmlConfigUtils;
+import hr.algebra.mangaapp.util.ConfigUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -98,7 +98,7 @@ public class RegisterController {
                     getClass().getResource("/hr/algebra/mangaapp/view/main.fxml")
             );
 
-            Dimension2D bigScreen = XmlConfigUtils.getBigScreen();
+            Dimension2D bigScreen = ConfigUtils.getBigScreen();
             Scene scene = new Scene(
                     loader.load(),
                     bigScreen.getWidth(),
@@ -125,7 +125,7 @@ public class RegisterController {
                     MangaApp.class.getResource("/hr/algebra/mangaapp/view/login.fxml")
             );
 
-            Dimension2D smallScreen = XmlConfigUtils.getSmallScreen();
+            Dimension2D smallScreen = ConfigUtils.getSmallScreen();
             Scene scene = new Scene(
                     loader.load(),
                     smallScreen.getWidth(),

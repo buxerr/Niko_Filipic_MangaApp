@@ -9,7 +9,7 @@ import java.sql.SQLException;
 public final class DatabaseUtils {
 
     private static final DatabaseConfig DATABASE_CONFIG =
-            XmlConfigUtils.loadDatabaseConfig();
+            ConfigUtils.loadDatabaseConfig();
 
     private DatabaseUtils() {
     }

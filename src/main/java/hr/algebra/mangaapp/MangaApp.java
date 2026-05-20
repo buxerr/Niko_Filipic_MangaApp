@@ -1,6 +1,6 @@
 package hr.algebra.mangaapp;
 
-import hr.algebra.mangaapp.util.XmlConfigUtils;
+import hr.algebra.mangaapp.util.ConfigUtils;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Dimension2D;
@@ -17,7 +17,7 @@ public class MangaApp extends Application {
                 MangaApp.class.getResource("/hr/algebra/mangaapp/view/login.fxml")
         );
 
-        Dimension2D smallScreen = XmlConfigUtils.getSmallScreen();
+        Dimension2D smallScreen = ConfigUtils.getSmallScreen();
         Scene scene = new Scene(
                 loader.load(),
                 smallScreen.getWidth(),
