@@ -42,7 +42,7 @@ public class CoverImageService {
 
         try {
             return Files.deleteIfExists(coverPath);
-        } catch (IOException e) {
+        } catch (IOException _) {
             return false;
         }
     }

@@ -45,7 +45,7 @@ public class RegisterController {
         usernameTextField.requestFocus();
     }
 
-    public void handleRegister(ActionEvent actionEvent) {
+    public void handleRegister() {
 
         String username = usernameTextField.getText();
         String password = passwordField.getText();
@@ -119,7 +119,7 @@ public class RegisterController {
         }
     }
 
-    public void handleOpenLogin(ActionEvent actionEvent) {
+    public void handleOpenLogin() {
         try {
             FXMLLoader loader = new FXMLLoader(
                     MangaApp.class.getResource("/hr/algebra/mangaapp/view/login.fxml")

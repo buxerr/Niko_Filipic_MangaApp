@@ -2,10 +2,6 @@ package hr.algebra.mangaapp.model;
 
 import hr.algebra.mangaapp.model.enums.AuthorType;
 
-import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
-
 public class Author extends BaseEntity implements Comparable<Author> {
 
     private String firstName;

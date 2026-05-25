@@ -381,7 +381,7 @@ public class MangaController {
 
                     success = true;
 
-                } catch (NumberFormatException e) {
+                } catch (NumberFormatException _) {
                     messageLabel.setText("Invalid character drag data.");
                 }
             }

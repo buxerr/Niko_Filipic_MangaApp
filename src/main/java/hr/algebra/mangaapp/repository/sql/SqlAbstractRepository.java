@@ -34,7 +34,7 @@ public abstract class SqlAbstractRepository<T> implements Repository<T> {
             }
         } catch (SQLException e) {
             throw new RepositoryException("Error while loading entities", e);
-        };
+        }
 
         return entities;
     }

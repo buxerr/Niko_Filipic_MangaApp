@@ -221,7 +221,7 @@ public class MainController {
         try {
             mangaXmlExportService.exportCatalogByAuthor(selectedAuthor, destinationFile);
             showInfo("XML catalog exported successfully.");
-        } catch (RuntimeException exception) {
+        } catch (RuntimeException _) {
             showError("Failed to export XML catalog.");
         }
     }

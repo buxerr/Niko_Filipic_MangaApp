@@ -97,7 +97,7 @@ public class LoginController {
         }
     }
 
-    public void handleOpenRegister(ActionEvent actionEvent) {
+    public void handleOpenRegister() {
         try {
             FXMLLoader loader = new FXMLLoader(
                     MangaApp.class.getResource("/hr/algebra/mangaapp/view/register.fxml")

@@ -97,7 +97,7 @@ public class MangaFormService {
 
         try {
             return Integer.parseInt(value.trim());
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException _) {
             return null;
         }
     }
